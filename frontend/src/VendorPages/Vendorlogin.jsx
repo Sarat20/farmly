@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 
 const Vendorlogin = () => {
   const [state, setState] = useState('Login');
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [consentDataUse, setConsentDataUse] = useState(false);
+
+  const isFormValid = agreeTerms && consentDataUse;
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-white">
@@ -144,7 +148,12 @@ const Vendorlogin = () => {
 
             <div className="space-y-2">
               <label className="flex items-start space-x-2 cursor-pointer">
-                <input type="checkbox" required className="mt-1" />
+                <input
+                  type="checkbox"
+                  checked={agreeTerms}
+                  onChange={() => setAgreeTerms(!agreeTerms)}
+                  className="mt-1"
+                />
                 <span>
                   I agree to the{' '}
                   <a href="/terms" target="_blank" className="text-blue-600 underline cursor-pointer">
@@ -154,14 +163,25 @@ const Vendorlogin = () => {
                 </span>
               </label>
               <label className="flex items-start space-x-2 cursor-pointer">
-                <input type="checkbox" required className="mt-1" />
+                <input
+                  type="checkbox"
+                  checked={consentDataUse}
+                  onChange={() => setConsentDataUse(!consentDataUse)}
+                  className="mt-1"
+                />
                 <span>
                   I consent to the use of my data by Farmly for platform operations, logistics, and service improvements.
                 </span>
               </label>
             </div>
 
-            <button type="submit" className="w-full bg-green-600 text-white font-semibold py-2 rounded hover:bg-green-700 transition">
+            <button
+              type="submit"
+              disabled={!isFormValid}
+              className={`w-full text-white font-semibold py-2 rounded transition ${
+                isFormValid ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'
+              }`}
+            >
               Register
             </button>
           </form>
