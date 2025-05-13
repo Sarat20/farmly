@@ -60,10 +60,7 @@ const VendorSchema=mongoose.Schema({
         type:String,
         required:true       
     },
-    ProfilePhoto: {
-         type: String,
-          default: ''
-    },
+
 })
 const VendorModel=mongoose.model('Vendor',VendorSchema)
 export default VendorModel

@@ -1,11 +1,119 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Vendorlogin = () => {
   const [state, setState] = useState('Login');
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [consentDataUse, setConsentDataUse] = useState(false);
+  const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const navigate = useNavigate();
 
   const isFormValid = agreeTerms && consentDataUse;
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+ const handleLoginSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setErrorMsg('');
+  try {
+    const { email, password } = formData;
+    const response = await axios.post('http://localhost:4000/api/vendor/login', {
+      Email: email, // Send "Email" in uppercase
+      Password: password, // Send "Password" in uppercase
+    });
+
+    // Check if the response contains a token
+    if (response.data.token) {
+      localStorage.setItem("vtoken", response.data.token);  // Store token in localStorage
+      alert('Login successful!');
+      navigate('/dashboard');
+    } else {
+      setErrorMsg('No token received. Please try again.');
+    }
+
+    // Reset state
+    setFormData({});
+    setAgreeTerms(false);
+    setConsentDataUse(false);
+  } catch (error) {
+    setErrorMsg(error.response?.data?.message || 'Login failed. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+ const handleRegisterSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setErrorMsg('');
+
+  try {
+    const payload = {
+      Name: formData.name, // Ensure the field names match your schema (uppercase)
+      Email: formData.email,
+      Password: formData.password,
+      Mobilenumber: formData.phone,
+      Farmname: formData.farmName,
+      Village: formData.village,
+      District: formData.district,
+      State: formData.state,
+      Pincode: formData.pincode,
+      Deliveryarea: formData.deliveryAddress || '',
+      BankAccount: formData.accountNumber,
+      IFSC: formData.ifsc,
+      UPI: formData.upi || '',
+      PAN: formData.pan,
+      Aadhar: formData.aadhaar,
+    };
+
+    const response = await axios.post('http://localhost:4000/api/vendor/register', payload);
+
+    // Check if the response contains a token
+    if (response.data.token) {
+      localStorage.setItem("vtoken", response.data.token);  // Store token in localStorage
+      alert('Registration successful!');
+      navigate('/dashboard'); // Navigate to dashboard after successful registration
+    } else {
+      setErrorMsg('No token received. Please try again.');
+    }
+
+    // Reset state before navigating
+    setFormData({});
+    setAgreeTerms(false);
+    setConsentDataUse(false);
+
+  } catch (error) {
+    setErrorMsg(error.response?.data?.message || 'Registration failed. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  const inputField = ({ name, label, type = 'text', placeholder }) => (
+    <div>
+      <label className="block mb-1 cursor-pointer">{label}</label>
+      <input
+        type={type}
+        name={name}
+        value={formData[name] || ''}
+        onChange={handleInputChange}
+        placeholder={placeholder}
+        className="w-full border border-black px-3 py-2 rounded outline-none"
+      />
+    </div>
+  );
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-white">
@@ -18,90 +126,65 @@ const Vendorlogin = () => {
           {state === 'Login' ? (
             <p>
               New vendor?{' '}
-              <span
-                onClick={() => setState('SignUp')}
-                className="text-green-600 underline cursor-pointer"
-              >
+              <span onClick={() => setState('SignUp')} className="text-green-600 underline cursor-pointer">
                 Register here
               </span>
             </p>
           ) : (
             <p>
               Already have an account?{' '}
-              <span
-                onClick={() => setState('Login')}
-                className="text-blue-600 underline cursor-pointer"
-              >
+              <span onClick={() => setState('Login')} className="text-blue-600 underline cursor-pointer">
                 Login here
               </span>
             </p>
           )}
         </div>
 
+        {errorMsg && <p className="text-red-600 text-sm mb-4">{errorMsg}</p>}
+
         {/* ---------- Login Form ---------- */}
         {state === 'Login' && (
-          <form className="space-y-4">
-            <div>
-              <label className="block mb-1 cursor-pointer">Email</label>
-              <input type="email" placeholder="Enter Email" className="w-full border border-black px-3 py-2 rounded outline-none" />
-            </div>
-            <div>
-              <label className="block mb-1 cursor-pointer">Password</label>
-              <input type="password" placeholder="Enter Password" className="w-full border border-black px-3 py-2 rounded outline-none" />
-            </div>
-            <button type="submit" className="w-full bg-green-600 text-white font-semibold py-2 rounded hover:bg-green-700 transition">
-              Login
+          <form className="space-y-4" onSubmit={handleLoginSubmit}>
+            {inputField({ name: 'email', label: 'Email', type: 'email', placeholder: 'Enter Email' })}
+            {inputField({ name: 'password', label: 'Password', type: 'password', placeholder: 'Enter Password' })}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-green-600 text-white font-semibold py-2 rounded hover:bg-green-700 transition"
+            >
+              {loading ? 'Logging in...' : 'Login'}
             </button>
           </form>
         )}
 
         {/* ---------- Registration Form ---------- */}
         {state === 'SignUp' && (
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleRegisterSubmit}>
             <div>
               <h3 className="font-semibold mb-2">Personal Details</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block mb-1 cursor-pointer">Name</label>
-                  <input type="text" placeholder="Enter Name" className="w-full border border-black px-3 py-2 rounded outline-none" />
-                </div>
-                <div>
-                  <label className="block mb-1 cursor-pointer">Mobile Number</label>
-                  <input type="text" placeholder="Enter Phone Number" className="w-full border border-black px-3 py-2 rounded outline-none" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block mb-1 cursor-pointer">Profile Picture</label>
-                  <input type="file" className="w-full" />
-                </div>
+                {inputField({ name: 'name', label: 'Name', placeholder: 'Enter Name' })}
+                {inputField({ name: 'phone', label: 'Mobile Number', placeholder: 'Enter Phone Number' })}
               </div>
             </div>
 
             <div>
               <h3 className="font-semibold mb-2">Farm & Address Info</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block mb-1 cursor-pointer">Farm Name</label>
-                  <input type="text" placeholder="Enter Farm Name" className="w-full border border-black px-3 py-2 rounded outline-none" />
-                </div>
-                <div>
-                  <label className="block mb-1 cursor-pointer">Village</label>
-                  <input type="text" placeholder="Enter Village" className="w-full border border-black px-3 py-2 rounded outline-none" />
-                </div>
-                <div>
-                  <label className="block mb-1 cursor-pointer">District</label>
-                  <input type="text" placeholder="Enter District" className="w-full border border-black px-3 py-2 rounded outline-none" />
-                </div>
-                <div>
-                  <label className="block mb-1 cursor-pointer">State</label>
-                  <input type="text" placeholder="Enter State" className="w-full border border-black px-3 py-2 rounded outline-none" />
-                </div>
-                <div>
-                  <label className="block mb-1 cursor-pointer">Pincode</label>
-                  <input type="text" placeholder="Enter Pincode" className="w-full border border-black px-3 py-2 rounded outline-none" />
-                </div>
+                {inputField({ name: 'farmName', label: 'Farm Name', placeholder: 'Enter Farm Name' })}
+                {inputField({ name: 'village', label: 'Village', placeholder: 'Enter Village' })}
+                {inputField({ name: 'district', label: 'District', placeholder: 'Enter District' })}
+                {inputField({ name: 'state', label: 'State', placeholder: 'Enter State' })}
+                {inputField({ name: 'pincode', label: 'Pincode', placeholder: 'Enter Pincode' })}
                 <div className="md:col-span-2">
                   <label className="block mb-1 cursor-pointer">Delivery Address (Optional)</label>
-                  <textarea placeholder="Enter Address" className="w-full border border-black px-3 py-2 rounded outline-none" />
+                  <textarea
+                    name="deliveryAddress"
+                    value={formData.deliveryAddress || ''}
+                    onChange={handleInputChange}
+                    placeholder="Enter Address"
+                    className="w-full border border-black px-3 py-2 rounded outline-none"
+                  />
                 </div>
               </div>
             </div>
@@ -109,40 +192,19 @@ const Vendorlogin = () => {
             <div>
               <h3 className="font-semibold mb-2">Bank Details</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block mb-1 cursor-pointer">Bank Account Number</label>
-                  <input type="number" placeholder="Enter Account Number" className="w-full border border-black px-3 py-2 rounded outline-none" />
-                </div>
-                <div>
-                  <label className="block mb-1 cursor-pointer">IFSC Code</label>
-                  <input type="text" placeholder="Enter IFSC" className="w-full border border-black px-3 py-2 rounded outline-none" />
-                </div>
-                <div>
-                  <label className="block mb-1 cursor-pointer">UPI ID (Optional)</label>
-                  <input type="text" placeholder="Enter UPI ID" className="w-full border border-black px-3 py-2 rounded outline-none" />
-                </div>
-                <div>
-                  <label className="block mb-1 cursor-pointer">PAN Card</label>
-                  <input type="text" placeholder="Enter PAN" className="w-full border border-black px-3 py-2 rounded outline-none" />
-                </div>
-                <div>
-                  <label className="block mb-1 cursor-pointer">Aadhaar Number</label>
-                  <input type="text" placeholder="Enter Aadhaar" className="w-full border border-black px-3 py-2 rounded outline-none" />
-                </div>
+                {inputField({ name: 'accountNumber', label: 'Bank Account Number', type: 'number', placeholder: 'Enter Account Number' })}
+                {inputField({ name: 'ifsc', label: 'IFSC Code', placeholder: 'Enter IFSC' })}
+                {inputField({ name: 'upi', label: 'UPI ID (Optional)', placeholder: 'Enter UPI ID' })}
+                {inputField({ name: 'pan', label: 'PAN Card', placeholder: 'Enter PAN' })}
+                {inputField({ name: 'aadhaar', label: 'Aadhaar Number', placeholder: 'Enter Aadhaar' })}
               </div>
             </div>
 
             <div>
               <h3 className="font-semibold mb-2">Login Credentials</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block mb-1 cursor-pointer">Email</label>
-                  <input type="email" placeholder="Enter Email" className="w-full border border-black px-3 py-2 rounded outline-none" />
-                </div>
-                <div>
-                  <label className="block mb-1 cursor-pointer">Password</label>
-                  <input type="password" placeholder="Enter Password" className="w-full border border-black px-3 py-2 rounded outline-none" />
-                </div>
+                {inputField({ name: 'email', label: 'Email', type: 'email', placeholder: 'Enter Email' })}
+                {inputField({ name: 'password', label: 'Password', type: 'password', placeholder: 'Enter Password' })}
               </div>
             </div>
 
@@ -156,7 +218,7 @@ const Vendorlogin = () => {
                 />
                 <span>
                   I agree to the{' '}
-                  <a href="/terms" target="_blank" className="text-blue-600 underline cursor-pointer">
+                  <a href="/terms" target="_blank" className="text-blue-600 underline">
                     Terms and Conditions
                   </a>{' '}
                   of Farmly.
@@ -177,12 +239,10 @@ const Vendorlogin = () => {
 
             <button
               type="submit"
-              disabled={!isFormValid}
-              className={`w-full text-white font-semibold py-2 rounded transition ${
-                isFormValid ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'
-              }`}
+              disabled={!isFormValid || loading}
+              className={`w-full text-white font-semibold py-2 rounded transition ${isFormValid && !loading ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'}`}
             >
-              Register
+              {loading ? 'Registering...' : 'Register'}
             </button>
           </form>
         )}

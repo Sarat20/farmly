@@ -2,6 +2,16 @@ import VendorModel from "../models/VendorModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+
+import ProductModel from "../models/ProductModel.js";
+import { v2 as cloudinary } from "cloudinary";
+
+import path from 'path'; 
+
+
+
+
+
 const vendorlogin = async (req, res) => {
     try {
         const { Email, Password } = req.body;
@@ -23,6 +33,10 @@ const vendorlogin = async (req, res) => {
         return res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
+
+
+
+
 
 
 const vendorRegister = async (req, res) => {
@@ -49,7 +63,7 @@ const vendorRegister = async (req, res) => {
       if (
         !Name || !Email || !Mobilenumber || !Farmname || !Village ||
         !District || !State || !Pincode || !Deliveryarea || !BankAccount ||
-        !IFSC || !UPI || !PAN || !Aadhar || !Password
+        !IFSC || !PAN || !Aadhar || !Password
       ) {
         return res.status(400).json({ success: false, message: "Please fill all the details" });
       }
@@ -78,7 +92,7 @@ const vendorRegister = async (req, res) => {
         PAN,
         Aadhar,
         Password: hashedPassword,
-        // No ProfilePhoto here
+        
       });
   
       const vendor = await newVendor.save();
@@ -92,4 +106,90 @@ const vendorRegister = async (req, res) => {
   };
   
 
-export { vendorlogin, vendorRegister };
+
+
+
+
+
+
+const AddProduct = async (req, res) => {
+    try {
+        const { Name, Description, Price, Quantity, Type } = req.body;
+
+        console.log("Request Body:", req.body);
+        console.log("Uploaded File:", req.file);
+
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: "Image is required" });
+        }
+
+        const imageFile = req.file;
+        console.log("Image File Details:", imageFile);
+
+        const normalizedPath = path.resolve(imageFile.path);
+        console.log("Normalized Path:", normalizedPath);
+
+        let imageUrl;
+        try {
+            const imageUpload = await cloudinary.uploader.upload(normalizedPath, { resource_type: "image" });
+            imageUrl = imageUpload.secure_url;
+            console.log("Image Uploaded to Cloudinary:", imageUrl);
+        } catch (error) {
+            console.error("Error during Cloudinary upload:", error);
+            return res.status(500).json({ success: false, message: "Image upload failed" });
+        }
+
+      
+        const newProduct = new ProductModel({
+            Vendor: req.user.id,
+            Name,
+            Description,
+            Price: Number(Price), 
+            Quantity: Number(Quantity), 
+            Type: Type.replace(/'/g, ''), 
+            Image: imageUrl,
+        });
+
+        await newProduct.save();
+        res.status(201).json({ success: true, message: "Product added successfully" });
+    } catch (error) {
+        console.error("Add Product Error:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+const getVendorProducts = async (req, res) => {
+  try {
+    const vendorId = req.user.id; // From authVendor middleware
+
+    const products = await ProductModel.find({ Vendor: vendorId }).sort({ CreatedAt: -1 });
+
+    res.status(200).json({ success: true, products });
+  } catch (error) {
+    console.error("Error fetching vendor products:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+
+
+const getVendorProfile = async (req, res) => {
+  try {
+    const vendorId = req.user.id;
+
+    const vendor = await VendorModel.findById(vendorId).select("-Password"); 
+
+    if (!vendor) {
+      return res.status(404).json({ success: false, message: "Vendor not found" });
+    }
+
+    res.status(200).json({ success: true, vendor });
+  } catch (error) {
+    console.error("Get Vendor Profile Error:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+
+
+export { vendorlogin, vendorRegister ,AddProduct,getVendorProducts,getVendorProfile};
