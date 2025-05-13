@@ -7,6 +7,7 @@ const Vendorlogin = () => {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [consentDataUse, setConsentDataUse] = useState(false);
   const [formData, setFormData] = useState({});
+  const [profilePhoto, setProfilePhoto] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
@@ -21,85 +22,88 @@ const Vendorlogin = () => {
     });
   };
 
- const handleLoginSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setErrorMsg('');
-  try {
-    const { email, password } = formData;
-    const response = await axios.post('http://localhost:4000/api/vendor/login', {
-      Email: email, // Send "Email" in uppercase
-      Password: password, // Send "Password" in uppercase
-    });
+  const handlePhotoChange = (e) => {
+    setProfilePhoto(e.target.files[0]);
+  };
 
-    // Check if the response contains a token
-    if (response.data.token) {
-      localStorage.setItem("vtoken", response.data.token);  // Store token in localStorage
-      alert('Login successful!');
-      navigate('/dashboard');
-    } else {
-      setErrorMsg('No token received. Please try again.');
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg('');
+    try {
+      const { email, password } = formData;
+      const response = await axios.post('http://localhost:4000/api/vendor/login', {
+        Email: email,
+        Password: password,
+      });
+
+      if (response.data.token) {
+        localStorage.setItem("vtoken", response.data.token);
+        alert('Login successful!');
+        navigate('/dashboard');
+      } else {
+        setErrorMsg('No token received. Please try again.');
+      }
+
+      setFormData({});
+      setAgreeTerms(false);
+      setConsentDataUse(false);
+    } catch (error) {
+      setErrorMsg(error.response?.data?.message || 'Login failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // Reset state
-    setFormData({});
-    setAgreeTerms(false);
-    setConsentDataUse(false);
-  } catch (error) {
-    setErrorMsg(error.response?.data?.message || 'Login failed. Please try again.');
-  } finally {
-    setLoading(false);
-  }
-};
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg('');
 
+    try {
+      const form = new FormData();
+      form.append('Name', formData.name);
+      form.append('Email', formData.email);
+      form.append('Password', formData.password);
+      form.append('Mobilenumber', formData.phone);
+      form.append('Farmname', formData.farmName);
+      form.append('Village', formData.village);
+      form.append('District', formData.district);
+      form.append('State', formData.state);
+      form.append('Pincode', formData.pincode);
+      form.append('Deliveryarea', formData.deliveryAddress || '');
+      form.append('BankAccount', formData.accountNumber);
+      form.append('IFSC', formData.ifsc);
+      form.append('UPI', formData.upi || '');
+      form.append('PAN', formData.pan);
+      form.append('Aadhar', formData.aadhaar);
 
- const handleRegisterSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setErrorMsg('');
+      if (profilePhoto) {
+        form.append('ProfilePhoto', profilePhoto); // Must match 'req.file' field name
+      }
 
-  try {
-    const payload = {
-      Name: formData.name, // Ensure the field names match your schema (uppercase)
-      Email: formData.email,
-      Password: formData.password,
-      Mobilenumber: formData.phone,
-      Farmname: formData.farmName,
-      Village: formData.village,
-      District: formData.district,
-      State: formData.state,
-      Pincode: formData.pincode,
-      Deliveryarea: formData.deliveryAddress || '',
-      BankAccount: formData.accountNumber,
-      IFSC: formData.ifsc,
-      UPI: formData.upi || '',
-      PAN: formData.pan,
-      Aadhar: formData.aadhaar,
-    };
+      const response = await axios.post('http://localhost:4000/api/vendor/register', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
 
-    const response = await axios.post('http://localhost:4000/api/vendor/register', payload);
+      if (response.data.token) {
+        localStorage.setItem("vtoken", response.data.token);
+        alert('Registration successful!');
+        navigate('/dashboard');
+      } else {
+        setErrorMsg('No token received. Please try again.');
+      }
 
-    // Check if the response contains a token
-    if (response.data.token) {
-      localStorage.setItem("vtoken", response.data.token);  // Store token in localStorage
-      alert('Registration successful!');
-      navigate('/dashboard'); // Navigate to dashboard after successful registration
-    } else {
-      setErrorMsg('No token received. Please try again.');
+      setFormData({});
+      setProfilePhoto(null);
+      setAgreeTerms(false);
+      setConsentDataUse(false);
+    } catch (error) {
+      setErrorMsg(error.response?.data?.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
-
-    // Reset state before navigating
-    setFormData({});
-    setAgreeTerms(false);
-    setConsentDataUse(false);
-
-  } catch (error) {
-    setErrorMsg(error.response?.data?.message || 'Registration failed. Please try again.');
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   const inputField = ({ name, label, type = 'text', placeholder }) => (
     <div>
@@ -165,6 +169,16 @@ const Vendorlogin = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {inputField({ name: 'name', label: 'Name', placeholder: 'Enter Name' })}
                 {inputField({ name: 'phone', label: 'Mobile Number', placeholder: 'Enter Phone Number' })}
+              </div>
+              <div className="mt-2">
+                <label className="block mb-1 cursor-pointer">Profile Photo (Optional)</label>
+                <input
+                  type="file"
+                  name="profilePhoto"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  className="w-full border border-black px-3 py-2 rounded outline-none"
+                />
               </div>
             </div>
 

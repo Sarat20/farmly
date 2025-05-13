@@ -39,75 +39,225 @@ const vendorlogin = async (req, res) => {
 
 
 
-const vendorRegister = async (req, res) => {
-    try {
-      const {
-        Name,
-        Email,
-        Mobilenumber,
-        Farmname,
-        Village,
-        District,
-        State,
-        Pincode,
-        Deliveryarea,
-        BankAccount,
-        IFSC,
-        UPI,
-        PAN,
-        Aadhar,
-        Password,
+// const vendorRegister = async (req, res) => {
+//     try {
+//       const {
+//         Name,
+//         Email,
+//         Mobilenumber,
+//         Farmname,
+//         Village,
+//         District,
+//         State,
+//         Pincode,
+//         Deliveryarea,
+//         BankAccount,
+//         IFSC,
+//         UPI,
+//         PAN,
+//         Aadhar,
+//         Password,
       
-      } = req.body;
+//       } = req.body;
   
-      if (
-        !Name || !Email || !Mobilenumber || !Farmname || !Village ||
-        !District || !State || !Pincode || !Deliveryarea || !BankAccount ||
-        !IFSC || !PAN || !Aadhar || !Password
-      ) {
-        return res.status(400).json({ success: false, message: "Please fill all the details" });
-      }
+//       if (
+//         !Name || !Email || !Mobilenumber || !Farmname || !Village ||
+//         !District || !State || !Pincode || !Deliveryarea || !BankAccount ||
+//         !IFSC || !PAN || !Aadhar || !Password
+//       ) {
+//         return res.status(400).json({ success: false, message: "Please fill all the details" });
+//       }
   
-      const existingVendor = await VendorModel.findOne({ Email });
-      if (existingVendor) {
-        return res.status(400).json({ success: false, message: "Vendor already exists" });
-      }
+//       const existingVendor = await VendorModel.findOne({ Email });
+//       if (existingVendor) {
+//         return res.status(400).json({ success: false, message: "Vendor already exists" });
+//       }
   
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(Password, salt);
+//       const salt = await bcrypt.genSalt(10);
+//       const hashedPassword = await bcrypt.hash(Password, salt);
   
-      const newVendor = new VendorModel({
-        Name,
-        Email,
-        Mobilenumber,
-        Farmname,
-        Village,
-        District,
-        State,
-        Pincode,
-        Deliveryarea,
-        BankAccount,
-        IFSC,
-        UPI,
-        PAN,
-        Aadhar,
-        Password: hashedPassword,
+//       const newVendor = new VendorModel({
+//         Name,
+//         Email,
+//         Mobilenumber,
+//         Farmname,
+//         Village,
+//         District,
+//         State,
+//         Pincode,
+//         Deliveryarea,
+//         BankAccount,
+//         IFSC,
+//         UPI,
+//         PAN,
+//         Aadhar,
+//         Password: hashedPassword,
         
-      });
+//       });
   
-      const vendor = await newVendor.save();
-      const token = jwt.sign({ id: vendor._id }, process.env.JWT_SECRET_KEY);
+//       const vendor = await newVendor.save();
+//       const token = jwt.sign({ id: vendor._id }, process.env.JWT_SECRET_KEY);
   
-      return res.status(201).json({ success: true, token });
-    } catch (error) {
-      console.error("Vendor Registration Error:", error);
-      return res.status(500).json({ success: false, message: "Internal Server Error" });
+//       return res.status(201).json({ success: true, token });
+//     } catch (error) {
+//       console.error("Vendor Registration Error:", error);
+//       return res.status(500).json({ success: false, message: "Internal Server Error" });
+//     }
+//   };
+  
+
+// const vendorRegister = async (req, res) => {
+//   try {
+//     const {
+//       Name,
+//       Email,
+//       Mobilenumber,
+//       Farmname,
+//       Village,
+//       District,
+//       State,
+//       Pincode,
+//       Deliveryarea,
+//       BankAccount,
+//       IFSC,
+//       UPI,
+//       PAN,
+//       Aadhar,
+//       Password,
+//     } = req.body;
+
+//     if (
+//       !Name || !Email || !Mobilenumber || !Farmname || !Village ||
+//       !District || !State || !Pincode || !Deliveryarea || !BankAccount ||
+//       !IFSC || !PAN || !Aadhar || !Password
+//     ) {
+//       return res.status(400).json({ success: false, message: "Please fill all the details" });
+//     }
+
+//     const existingVendor = await VendorModel.findOne({ Email });
+//     if (existingVendor) {
+//       return res.status(400).json({ success: false, message: "Vendor already exists" });
+//     }
+
+//     // Upload profile photo if provided
+//     let profilePhotoUrl = "";
+//     if (req.file) {
+//       const imagePath = path.resolve(req.file.path);
+//       const result = await cloudinary.uploader.upload(imagePath, {
+//         resource_type: "image",
+//         folder: "vendor_profiles"
+//       });
+//       profilePhotoUrl = result.secure_url;
+//     }
+
+//     const salt = await bcrypt.genSalt(10);
+//     const hashedPassword = await bcrypt.hash(Password, salt);
+
+//     const newVendor = new VendorModel({
+//       Name,
+//       Email,
+//       Mobilenumber,
+//       Farmname,
+//       Village,
+//       District,
+//       State,
+//       Pincode,
+//       Deliveryarea,
+//       BankAccount,
+//       IFSC,
+//       UPI,
+//       PAN,
+//       Aadhar,
+//       Password: hashedPassword,
+//       ProfilePhoto: profilePhotoUrl,
+//     });
+
+//     const vendor = await newVendor.save();
+//     const token = jwt.sign({ id: vendor._id }, process.env.JWT_SECRET_KEY);
+
+//     return res.status(201).json({ success: true, token });
+//   } catch (error) {
+//     console.error("Vendor Registration Error:", error);
+//     return res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
+
+
+const vendorRegister = async (req, res) => {
+  try {
+    const {
+      Name,
+      Email,
+      Mobilenumber,
+      Farmname,
+      Village,
+      District,
+      State,
+      Pincode,
+      Deliveryarea,
+      BankAccount,
+      IFSC,
+      UPI,
+      PAN,
+      Aadhar,
+      Password,
+    } = req.body;
+
+    if (
+      !Name || !Email || !Mobilenumber || !Farmname || !Village ||
+      !District || !State || !Pincode || !Deliveryarea || !BankAccount ||
+      !IFSC || !PAN || !Aadhar || !Password
+    ) {
+      return res.status(400).json({ success: false, message: "Please fill all the details" });
     }
-  };
-  
 
+    const existingVendor = await VendorModel.findOne({ Email });
+    if (existingVendor) {
+      return res.status(400).json({ success: false, message: "Vendor already exists" });
+    }
 
+    // Upload profile photo if provided
+    let profilePhotoUrl = "";
+    if (req.file) {
+      const imagePath = path.resolve(req.file.path);
+      const result = await cloudinary.uploader.upload(imagePath, {
+        resource_type: "image",
+        folder: "vendor_profiles"
+      });
+      profilePhotoUrl = result.secure_url;
+    }
 
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(Password, salt);
+
+    const newVendor = new VendorModel({
+      Name,
+      Email,
+      Mobilenumber,
+      Farmname,
+      Village,
+      District,
+      State,
+      Pincode,
+      Deliveryarea,
+      BankAccount,
+      IFSC,
+      UPI,
+      PAN,
+      Aadhar,
+      Password: hashedPassword,
+      ProfilePhoto: profilePhotoUrl,
+    });
+
+    const vendor = await newVendor.save();
+    const token = jwt.sign({ id: vendor._id }, process.env.JWT_SECRET_KEY);
+
+    return res.status(201).json({ success: true, token });
+  } catch (error) {
+    console.error("Vendor Registration Error:", error);
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
 
 
 

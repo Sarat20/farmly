@@ -8,7 +8,9 @@ import upload from '../middlewares/multer.js';
 
 
 
-vendorRouter.post('/register',vendorRegister);
+// vendorRouter.post('/register',vendorRegister);
+vendorRouter.post("/register", upload.single("ProfilePhoto"), vendorRegister);
+
 vendorRouter.post('/login',vendorlogin)
 vendorRouter.post('/add-product', authVendor, upload.single("Image"), AddProduct);
 vendorRouter.get('/my-products', authVendor, getVendorProducts);
