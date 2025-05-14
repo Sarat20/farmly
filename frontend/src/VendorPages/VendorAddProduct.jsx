@@ -2,62 +2,159 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 const VendorAddProduct = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    category: '',
-    price: '',
-    quantity: '',
-    image: null
-  });
+    const [productData, setProductData] = useState({
+        Name: '',
+        Description: '',
+        Price: '',
+        Quantity: '',
+        Type: 'Fresh Produce', // default type, change as needed
+    });
+    const [image, setImage] = useState(null);
+    const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    if (e.target.name === 'image') {
-      setFormData({ ...formData, image: e.target.files[0] });
-    } else {
-      setFormData({ ...formData, [e.target.name]: e.target.value });
-    }
-  };
+    // Handle form data changes
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setProductData({ ...productData, [name]: value });
+    };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const payload = new FormData();
-      for (let key in formData) {
-        payload.append(key, formData[key]);
-      }
+    // Handle image file selection
+    const handleImageChange = (e) => {
+        setImage(e.target.files[0]);
+    };
 
-      // Replace with actual vendorId
-      payload.append('vendorId', 'VENDOR_OBJECT_ID_HERE');
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem('vtoken'); // Get token from localStorage
+        if (!token) {
+            alert("You must be logged in to add a product!");
+            return;
+        }
 
-      const res = await axios.post('http://localhost:5000/api/vendors/add-product', payload);
-      alert(res.data.message);
-    } catch (err) {
-      console.error(err);
-      alert('Error adding product');
-    }
-  };
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('Name', productData.Name);
+        formData.append('Description', productData.Description);
+        formData.append('Price', productData.Price);
+        formData.append('Quantity', productData.Quantity);
+        formData.append('Type', productData.Type);
+        if (image) {
+            formData.append('Image', image);
+        }
 
-  return (
-    <div className="max-w-md mx-auto p-4 bg-white rounded shadow">
-      <h2 className="text-xl font-bold mb-4">Add New Product</h2>
-      <form onSubmit={handleSubmit}>
-        <input name="name" type="text" placeholder="Name" onChange={handleChange} className="w-full mb-2 p-2 border" required />
-        <select name="category" onChange={handleChange} className="w-full mb-2 p-2 border" required>
-          <option value="">Select Category</option>
-          <option value="Fresh Produce">🥦 Fresh Produce</option>
-          <option value="Seeds & Saplings">🌱 Seeds & Saplings</option>
-          <option value="Dry & Raw Produce">🥥 Dry & Raw Produce</option>
-          <option value="Farm-Made Products">🧴 Farm-Made Products</option>
-        </select>
-        <input name="price" type="number" placeholder="Price" onChange={handleChange} className="w-full mb-2 p-2 border" required />
-        <input name="quantity" type="text" placeholder="Quantity (e.g., 10kg)" onChange={handleChange} className="w-full mb-2 p-2 border" required />
-        <input name="image" type="file" accept="image/*" onChange={handleChange} className="w-full mb-2" required />
-        <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-          Add Product
-        </button>
-      </form>
-    </div>
-  );
+        try {
+            setLoading(true);
+            const response = await axios.post(
+                'http://localhost:4000/api/vendor/add-product',
+                formData,
+                {
+                    headers: {
+                        'vtoken': token,  // Send token in headers as 'vtoken'
+                        'Content-Type': 'multipart/form-data', // Specify content type for file upload
+                    },
+                }
+            );
+
+            setLoading(false);
+            alert(response.data.message); // Show success or error message from backend
+        } catch (error) {
+            setLoading(false);
+            console.error('Error adding product:', error);
+            alert('Error adding product');
+        }
+    };
+
+    return (
+        <div className='flex justify-center mt-15'>
+        <div className="p-4 w-1/2 items-center bg-white shadow-md rounded">
+            <h2 className="text-xl font-bold mb-4 text-center">Add Product</h2>
+            <form onSubmit={handleSubmit}>
+                <div className="mb-3 flex items-center gap-4">
+                    <label className="block text-gray-700 w-24">Name:</label>
+                    <input
+                        type="text"
+                        name="Name"
+                        value={productData.Name}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded text-sm"
+                    />
+                </div>
+
+                <div className="mb-3 flex items-center gap-4">
+                    <label className="block text-gray-700 w-24">Description:</label>
+                    <textarea
+                        name="Description"
+                        value={productData.Description}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded text-sm"
+                    />
+                </div>
+
+                <div className="mb-3 flex items-center gap-4">
+                    <label className="block text-gray-700 w-24">Price:</label>
+                    <input
+                        type="number"
+                        name="Price"
+                        value={productData.Price}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded text-sm"
+                    />
+                </div>
+
+                <div className="mb-3 flex items-center gap-4">
+                    <label className="block text-gray-700 w-24">Quantity:</label>
+                    <input
+                        type="number"
+                        name="Quantity"
+                        value={productData.Quantity}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded text-sm"
+                    />
+                </div>
+
+                <div className="mb-3 flex items-center gap-4">
+                    <label className="block text-gray-700 w-24">Type:</label>
+                    <select
+                        name="Type"
+                        value={productData.Type}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded text-sm"
+                    >
+                        <option value="Fresh Produce">Fresh Produce</option>
+                        <option value="Seeds & Saplings">Seeds & Saplings</option>
+                        <option value="Dry & Raw Produce">Dry & Raw Produce</option>
+                        <option value="Farm-Made Products">Farm-Made Products</option>
+                    </select>
+                </div>
+
+                <div className="mb-3 flex items-center gap-4">
+                    <label className="block text-gray-700 w-24">Image:</label>
+                    <input
+                        type="file"
+                        onChange={handleImageChange}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded text-sm"
+                    />
+                </div>
+
+                <div className="text-center">
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full py-2 bg-blue-500 text-white rounded mt-4 hover:bg-blue-600 disabled:bg-gray-400 text-sm"
+                    >
+                        {loading ? 'Adding Product...' : 'Add Product'}
+                    </button>
+                </div>
+            </form>
+        </div>
+        </div>
+    );
 };
 
 export default VendorAddProduct;

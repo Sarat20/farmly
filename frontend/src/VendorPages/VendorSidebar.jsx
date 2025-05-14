@@ -5,19 +5,20 @@ import { FaHome, FaUser, FaBox, FaPlus, FaTruck, FaWallet, FaQuestionCircle, FaS
 const VendorSidebar = () => {
   const navigate = useNavigate();
 
-  const menu = [
-    { label: 'Dashboard', icon: <FaHome />, path: '/vendor/dashboard' },
-    { label: 'Profile', icon: <FaUser />, path: '/vendor/profile' },
-    { label: 'My Products', icon: <FaBox />, path: '/vendor/products' },
-    { label: 'Add Product', icon: <FaPlus />, path: '/vendor/add-product' },
-    { label: 'Delivery Area', icon: <FaTruck />, path: '/vendor/delivery-area' },
-    { label: 'Payments', icon: <FaWallet />, path: '/vendor/payments' },
-    { label: 'Support', icon: <FaQuestionCircle />, path: '/vendor/support' },
-    { label: 'Logout', icon: <FaSignOutAlt />, path: '/vendor/logout' },  // Adjust this route if needed
-  ];
+ const menu = [
+  { label: 'Dashboard', icon: <FaHome />, path: '/vendor/dashboard' },
+  { label: 'Profile', icon: <FaUser />, path: '/vendor/dashboard/profile' },
+  { label: 'My Products', icon: <FaBox />, path: '/vendor/dashboard/products' },
+  { label: 'Add Product', icon: <FaPlus />, path: '/vendor/dashboard/add-product' },
+  { label: 'Delivery Area', icon: <FaTruck />, path: '/vendor/dashboard/delivery-area' },
+  { label: 'Payments', icon: <FaWallet />, path: '/vendor/dashboard/payments' },
+  { label: 'Support', icon: <FaQuestionCircle />, path: '/vendor/dashboard/support' },
+  { label: 'Logout', icon: <FaSignOutAlt />, path: '/vendor/logout' },
+];
+
 
   return (
-    <div className="w-64 h-screen bg-green-100 p-4 shadow-xl">
+    <div className="w-64 h-auto bg-green-100 p-4 shadow-xl">
       <h2 className="text-xl font-bold mb-6">Vendor Panel</h2>
       {menu.map((item, index) => (
         <div

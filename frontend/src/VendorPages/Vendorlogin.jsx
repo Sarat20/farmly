@@ -40,7 +40,7 @@ const Vendorlogin = () => {
       if (response.data.token) {
         localStorage.setItem("vtoken", response.data.token);
         alert('Login successful!');
-        navigate('/dashboard');
+         navigate('/vendor/dashboard');
       } else {
         setErrorMsg('No token received. Please try again.');
       }
@@ -89,7 +89,7 @@ const Vendorlogin = () => {
       if (response.data.token) {
         localStorage.setItem("vtoken", response.data.token);
         alert('Registration successful!');
-        navigate('/dashboard');
+        navigate('/vendor/dashboard');
       } else {
         setErrorMsg('No token received. Please try again.');
       }

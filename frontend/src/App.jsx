@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Buyer from './pages/Buyer';
@@ -24,12 +25,11 @@ const App = () => {
     <Router>
       <Navbar />
       <Routes>
-        {/* Public */}
+        {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/vendor" element={<Vendorlogin />} />
 
-        {/* Buyer Layout */}
+        {/* Buyer Routes */}
         <Route path="/buyer" element={<Buyer />}>
           <Route path="products" element={<Product />} />
           <Route path="cart" element={<Cart />} />
@@ -38,8 +38,11 @@ const App = () => {
           <Route path="wishlist" element={<Wishlist />} />
         </Route>
 
-        {/* Vendor Layout (Nested) */}
-        <Route path="/dashboard" element={<VendorLayout />}>
+        {/* Vendor Login Route */}
+        <Route path="/vendor" element={<Vendorlogin />} />
+
+        {/* Vendor Dashboard & Protected Pages */}
+        <Route path="/vendor/dashboard" element={<VendorLayout />}>
           <Route index element={<VendorDashboard />} />
           <Route path="products" element={<VendorProducts />} />
           <Route path="add-product" element={<VendorAddProduct />} />

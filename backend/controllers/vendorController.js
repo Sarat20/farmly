@@ -342,4 +342,71 @@ const getVendorProfile = async (req, res) => {
 
 
 
-export { vendorlogin, vendorRegister ,AddProduct,getVendorProducts,getVendorProfile};
+
+const updateVendorProfile = async (req, res) => {
+  try {
+    // Debug: Check if the route is being hit
+    console.log("Update Profile route hit!");
+
+    const vendorId = req.user.id;
+
+    // Debug: Log the request body (what we are trying to update)
+    console.log("Request Body:", req.body);
+
+    const updates = { ...req.body };
+
+    // Debug: Log the updates object
+    console.log("Updates:", updates);
+
+    // Check if a file (image) is uploaded
+    if (req.file) {
+      console.log("Processing Image Upload...");
+
+      const normalizedPath = path.resolve(req.file.path);
+      console.log("Normalized Image Path:", normalizedPath);
+
+      let imageUrl;
+      try {
+        // Upload image to Cloudinary
+        const uploadResult = await cloudinary.uploader.upload(normalizedPath, {
+          resource_type: 'image',
+        });
+
+        // Debug: Log the Cloudinary upload result
+        console.log("Cloudinary Upload Result:", uploadResult);
+        imageUrl = uploadResult.secure_url;
+        updates.ProfilePhoto = imageUrl; // Set the image URL to the updates object
+      } catch (error) {
+        console.error("Error during Cloudinary upload:", error);
+        return res.status(500).json({ success: false, message: "Image upload failed" });
+      }
+    }
+
+    // Update vendor profile in MongoDB
+    const updatedVendor = await VendorModel.findByIdAndUpdate(
+      vendorId,
+      updates,
+      { new: true, runValidators: true }
+    ).select("-Password");
+
+    // Debug: Log the updated vendor details
+    console.log("Updated Vendor:", updatedVendor);
+
+    if (!updatedVendor) {
+      return res.status(404).json({ success: false, message: "Vendor not found" });
+    }
+
+    // Send the updated vendor profile back in the response
+    res.status(200).json({ success: true, updatedVendor });
+  } catch (error) {
+    // Debug: Log the error for further debugging
+    console.error("Update Vendor Profile Error:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+
+
+
+
+export { vendorlogin, vendorRegister ,AddProduct,getVendorProducts,getVendorProfile,updateVendorProfile};
