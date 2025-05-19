@@ -13,7 +13,7 @@ const VendorSidebar = () => {
   { label: 'Delivery Area', icon: <FaTruck />, path: '/vendor/dashboard/delivery-area' },
   { label: 'Payments', icon: <FaWallet />, path: '/vendor/dashboard/payments' },
   { label: 'Support', icon: <FaQuestionCircle />, path: '/vendor/dashboard/support' },
-  { label: 'Logout', icon: <FaSignOutAlt />, path: '/vendor/logout' },
+  { label: 'Logout', icon: <FaSignOutAlt />, path: '/vendor/dashboard/logout' },
 ];
 
 

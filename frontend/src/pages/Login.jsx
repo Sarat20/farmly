@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import homelogo from "../assets/homelogo.png";
 
 const Login = () => {
@@ -11,6 +12,8 @@ const Login = () => {
   });
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
+  const navigate = useNavigate();
 
   // Handle input change
   const handleInputChange = (e) => {
@@ -34,25 +37,28 @@ const Login = () => {
 
     try {
       const response = await axios.post(apiUrl, {
-        ...(state === "SignUp" && { name: formData.name }), // Include name for SignUp
+        ...(state === "SignUp" && { name: formData.name }), // Include name only in SignUp
         email: formData.email,
         password: formData.password,
       });
 
+      const { token } = response.data;
+
+      // Save token in localStorage or sessionStorage
+      localStorage.setItem("token", token);
+
       alert(`${state === "SignUp" ? "Registration" : "Login"} successful!`);
 
-      // Reset form fields after successful operation
+      // Redirect user after login/signup
+      navigate("/user/products"); // You can change this to /vendor/dashboard if it's vendor
+
+      // Reset form
       setFormData({ name: "", email: "", password: "" });
-      setLoading(false);
-
-      // Redirect to another page after successful login or registration
-      // For example, you can navigate to a dashboard page
-      // navigate("/dashboard"); // Make sure you have useNavigate() hook for that
-
     } catch (error) {
       setErrorMsg(
         error.response?.data?.message || "An error occurred. Please try again."
       );
+    } finally {
       setLoading(false);
     }
   };
@@ -78,6 +84,7 @@ const Login = () => {
                   onChange={handleInputChange}
                   className="border border-black px-3 py-1 w-full"
                   placeholder="Enter your name"
+                  required
                 />
               </div>
             )}
@@ -91,6 +98,7 @@ const Login = () => {
                 onChange={handleInputChange}
                 className="border border-black px-3 py-1 w-full"
                 placeholder="Enter your email"
+                required
               />
             </div>
 
@@ -103,6 +111,7 @@ const Login = () => {
                 onChange={handleInputChange}
                 className="border border-black px-3 py-1 w-full"
                 placeholder="Enter your password"
+                required
               />
             </div>
 
@@ -112,9 +121,9 @@ const Login = () => {
               disabled={loading}
             >
               {loading
-                ? `${state === "SignUp" ? "Signing up..." : "Logging in..."}`
-                : state === "SignUp"
-                ? "SIGN UP"
+                ? `${state === "SignUp" ? "Signing up..." : "Logging in..."}` 
+                : state === "SignUp" 
+                ? "SIGN UP" 
                 : "LOGIN"}
             </button>
           </form>
@@ -151,4 +160,3 @@ const Login = () => {
 };
 
 export default Login;
-

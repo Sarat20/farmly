@@ -10,6 +10,9 @@ dotenv.config();
 
 import userRouter from './routes/userRoute.js'
 import vendorRouter from './routes/vendorRoute.js'
+import productRouter from './routes/ProductRoute.js';
+
+
 const PORT=process.env.PORT || 4000
 const app=express()
 
@@ -33,7 +36,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/user',userRouter)
 //apis for vendor
 app.use('/api/vendor',vendorRouter)
-
-
+//apis for product
+app.use("/api/products", productRouter);
 
 
