@@ -1,13 +1,20 @@
 // src/pages/ProductDetails.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import { FaStar, FaShoppingCart, FaHeart } from 'react-icons/fa';
+import { UserContext } from '../context/UserContext';
 
 const ProductDetails = () => {
-  const { id } = useParams();          // grabs the :id from /user/products/:id
+  const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Pull methods from context
+  const { addToCart, addToWishlist } = useContext(UserContext);
+
+  // Local state for transient notifications
+  const [notification, setNotification] = useState('');
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -16,7 +23,7 @@ const ProductDetails = () => {
         if (res.data.success) {
           setProduct({
             ...res.data.product,
-            Rating: Math.floor(Math.random() * 3) + 3, // fallback if no rating field
+            Rating: Math.floor(Math.random() * 3) + 3,
           });
         } else {
           setProduct(null);
@@ -32,14 +39,22 @@ const ProductDetails = () => {
     fetchProduct();
   }, [id]);
 
+  // Show a notification for 2 seconds
+  const showNotification = (message) => {
+    setNotification(message);
+    setTimeout(() => {
+      setNotification('');
+    }, 2000);
+  };
+
   const handleAddToCart = () => {
-    // TODO: implement actual add-to-cart logic (e.g., API call or context update)
-    console.log(`Add to Cart clicked for product ID: ${id}`);
+    addToCart(product);
+    showNotification('Added to Cart!');
   };
 
   const handleAddToWishlist = () => {
-    // TODO: implement actual add-to-wishlist logic (e.g., API call or context update)
-    console.log(`Add to Wishlist clicked for product ID: ${id}`);
+    addToWishlist(product);
+    showNotification('Added to Wishlist!');
   };
 
   if (loading) return <p className="p-4">Loading product details...</p>;
@@ -47,6 +62,13 @@ const ProductDetails = () => {
 
   return (
     <div className="p-4 max-w-4xl mx-auto">
+      {/* Transient notification banner */}
+      {notification && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-blue-100 text-blue-800 px-4 py-2 rounded shadow-lg">
+          {notification}
+        </div>
+      )}
+
       <Link to="/user/products" className="text-blue-600 underline mb-4 inline-block">
         &larr; Back to Products
       </Link>
