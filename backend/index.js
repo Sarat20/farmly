@@ -11,7 +11,7 @@ dotenv.config();
 import userRouter from './routes/userRoute.js'
 import vendorRouter from './routes/vendorRoute.js'
 import productRouter from './routes/ProductRoute.js';
-
+import orderRouter from './routes/OrderRoute.js';
 
 const PORT=process.env.PORT || 4000
 const app=express()
@@ -28,7 +28,12 @@ connectCloudinary();
 
 app.listen(PORT,()=>console.log(`server is running on port ${PORT}`))
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173', // <--- IMPORTANT: Replace with your actual frontend URL/port
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // If you're sending cookies/auth headers
+    optionsSuccessStatus: 204, // Some legacy browsers (IE11, various SmartTVs) choke on 200
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -38,5 +43,6 @@ app.use('/api/user',userRouter)
 app.use('/api/vendor',vendorRouter)
 //apis for product
 app.use("/api/products", productRouter);
-
+//apis for order
+app.use('/api/orders/',orderRouter);
 

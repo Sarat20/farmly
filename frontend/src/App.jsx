@@ -8,7 +8,7 @@ import Footer from './components/Footer';
 import About from './components/About';
 import Contact from './components/Contact';
 
-
+import { UserProvider } from './context/UserContext';
 
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -31,9 +31,10 @@ import VendorProfile from './VendorPages/VendorProfile';
 import VendorLogout from './VendorPages/VendorLogout';
 import VendorSupport from './VendorPages/VendorSupport';
 
-import { UserProvider } from './context/UserContext'; // ← import the provider
+
 
 import AddressManager from './pages/Address';
+import VendorOrder from './VendorPages/VendorOrder';
 
 const App = () => {
   return (
@@ -71,6 +72,7 @@ const App = () => {
             <Route path="add-product" element={<VendorAddProduct />} />
             <Route path="profile" element={<VendorProfile />} />
             <Route path="logout" element={<VendorLogout />} />
+            <Route path="orders" element={<VendorOrder/>}/>
             <Route path="support" element={<VendorSupport />} />
           </Route>
         </Routes>

@@ -1,59 +1,152 @@
-import React, { useEffect, useState } from 'react';
+// src/pages/Orders.jsx
+import React, { useState, useEffect, useContext, useCallback } from 'react'; // Import useCallback
+import { UserContext } from '../context/UserContext';
+import moment from 'moment';
 
-const Orders = () => {
-  const [orders, setOrders] = useState([]);
+const UserOrders = () => {
+    const { userId } = useContext(UserContext);
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-  useEffect(() => {
-    try {
-      const localOrders = JSON.parse(localStorage.getItem('orders')) || [];
-      setOrders(Array.isArray(localOrders) ? localOrders : []);
-    } catch (err) {
-      console.error('Error parsing orders from localStorage', err);
-      setOrders([]);
+    // --- MOVE fetchOrders OUTSIDE useEffect ---
+    // Use useCallback to memoize the function, preventing unnecessary re-renders
+    // and linting warnings about missing dependencies in useEffect.
+    const fetchOrders = useCallback(async () => {
+        if (!userId) {
+            setError('User not logged in or user ID not available.');
+            setLoading(false);
+            return;
+        }
+        try {
+            setLoading(true); // Set loading true before fetching
+            const response = await fetch(`http://localhost:4000/api/orders/user/${userId}`);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: response.statusText }));
+                throw new Error(`HTTP error! status: ${response.status}, Message: ${errorData.message}`);
+            }
+            const data = await response.json();
+            if (data.success) {
+                setOrders(data.orders);
+            } else {
+                setError(data.message || 'Failed to fetch orders.');
+            }
+        } catch (err) {
+            console.error('Error fetching orders:', err);
+            setError('Failed to load your orders. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    }, [userId]); // Add userId to useCallback's dependency array
+
+    useEffect(() => {
+        fetchOrders();
+    }, [fetchOrders]); // Now useEffect depends on fetchOrders (which depends on userId)
+
+    const handleCancelOrderItem = async (orderId, itemId) => {
+        if (!window.confirm('Are you sure you want to cancel this item?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:4000/api/orders/${orderId}/items/${itemId}/cancel`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: userId }), // Send userId for backend authorization
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('Order item cancelled successfully!');
+                fetchOrders(); // This will now correctly call the outer fetchOrders
+            } else {
+                alert(`Cancellation failed: ${data.message}`);
+            }
+        } catch (error) {
+            console.error('Error cancelling order item:', error);
+            alert('An error occurred while cancelling the item. Please try again.');
+        }
+    };
+
+    if (loading) {
+        return <div className="text-center p-4">Loading orders...</div>;
     }
-  }, []);
 
-  const handleCancelOrder = (index) => {
-    const updatedOrders = [...orders];
-    updatedOrders.splice(index, 1);
-    localStorage.setItem('orders', JSON.stringify(updatedOrders));
-    setOrders(updatedOrders);
-  };
+    if (error) {
+        return <div className="text-center p-4 text-red-600">Error: {error}</div>;
+    }
 
-  if (!orders.length) return <p className="p-4">You have no orders.</p>;
+    if (orders.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[60vh] text-center px-4">
+                <h2 className="text-2xl font-bold text-gray-700 mb-2">No Orders Yet!</h2>
+                <p className="text-gray-500 text-lg mb-4">
+                    Looks like you haven't placed any orders.
+                </p>
+                <a
+                    href="/user/products"
+                    className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+                >
+                    Start Shopping
+                </a>
+            </div>
+        );
+    }
 
-  return (
-    <div className="p-4 max-w-3xl mx-auto">
-      <h2 className="text-2xl font-semibold mb-4">My Orders</h2>
-      <ul className="space-y-4">
-        {orders.map((order, index) => (
-          <li key={index} className="border p-4 rounded-lg shadow-sm">
-            <p className="font-medium mb-2">
-              Delivery to:{' '}
-              {order.address
-                ? `${order.address.line1 || ''}, ${order.address.city || ''} - ${order.address.pincode || ''}`
-                : 'No address provided'}
-            </p>
-            <p className="text-sm text-gray-500 mb-1">Phone: {order.phone || 'N/A'}</p>
-            <p className="text-sm text-gray-500 mb-2">Payment: {order.paymentMethod || 'N/A'}</p>
-            <ul className="space-y-1 text-sm text-gray-700 mb-2">
-              {(order.products || []).map((prod, i) => (
-                <li key={i}>
-                  {prod.productId?.Name || 'Unnamed Product'} - Qty: {prod.quantity}
-                </li>
-              ))}
-            </ul>
-            <button
-              onClick={() => handleCancelOrder(index)}
-              className="bg-red-500 text-white px-3 py-1 text-sm rounded hover:bg-red-600"
-            >
-              Cancel Order
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+    return (
+        <div className="p-4 max-w-4xl mx-auto">
+            <h2 className="text-2xl font-semibold mb-4">Your Orders</h2>
+            <div className="space-y-6">
+                {orders.map((order) => (
+                    <div key={order._id} className="border border-gray-200 rounded-lg shadow-sm p-4 bg-white">
+                        <div className="flex justify-between items-center mb-3">
+                            <p className="font-semibold text-lg">Order ID: {order._id}</p>
+                            <p className="text-sm text-gray-500">Placed on: {moment(order.createdAt).format('MMM D, h:mm A')}</p>
+                        </div>
+                        <p className="text-gray-700 mb-2">Total Amount: ₹{order.totalAmount.toFixed(2)}</p>
+                        <p className="text-gray-700 mb-2">
+                            Shipping Address: {order.address.line1}, {order.address.city} - {order.address.pincode}
+                        </p>
+                        <p className="text-gray-700 mb-4">Phone: {order.phone}</p>
+
+                        <h3 className="font-medium mb-2">Items:</h3>
+                        <ul className="space-y-2">
+                            {order.items.map((item) => (
+                                <li key={item._id} className="flex items-center space-x-4 border-t pt-2">
+                                    <img
+                                        src={item.product?.Image || 'https://via.placeholder.com/64'}
+                                        alt={item.product?.Name || 'Product'}
+                                        className="w-16 h-16 object-cover rounded"
+                                    />
+                                    <div className="flex-1">
+                                        <p className="font-medium">{item.product?.Name || 'Unknown Product'}</p>
+                                        <p className="text-gray-600">Quantity: {item.quantity}</p>
+                                        <p className="text-gray-600">Status: <span className={`font-semibold ${
+                                            item.status === 'Delivered' ? 'text-green-600' :
+                                            item.status === 'Cancelled' ? 'text-red-600' :
+                                            'text-yellow-600'
+                                        }`}>{item.status}</span></p>
+
+                                        {(item.status === 'Pending' || item.status === 'Processing') && (
+                                            <button
+                                                onClick={() => handleCancelOrderItem(order._id, item._id)}
+                                                className="mt-2 px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition"
+                                            >
+                                                Cancel Item
+                                            </button>
+                                        )}
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 };
 
-export default Orders;
+export default UserOrders;

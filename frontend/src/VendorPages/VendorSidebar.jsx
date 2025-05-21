@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaHome, FaUser, FaBox, FaPlus, FaTruck, FaWallet, FaQuestionCircle, FaSignOutAlt } from 'react-icons/fa';
+import { FaHome, FaUser, FaBox, FaPlus, FaTruck, FaWallet, FaQuestionCircle, FaSignOutAlt, FaJediOrder } from 'react-icons/fa';
 
 const VendorSidebar = () => {
   const navigate = useNavigate();
@@ -10,8 +10,8 @@ const VendorSidebar = () => {
   { label: 'Profile', icon: <FaUser />, path: '/vendor/dashboard/profile' },
   { label: 'My Products', icon: <FaBox />, path: '/vendor/dashboard/products' },
   { label: 'Add Product', icon: <FaPlus />, path: '/vendor/dashboard/add-product' },
-  { label: 'Delivery Area', icon: <FaTruck />, path: '/vendor/dashboard/delivery-area' },
   { label: 'Payments', icon: <FaWallet />, path: '/vendor/dashboard/payments' },
+  { label: 'orders',icon:<FaJediOrder/>,path:'/vendor/dashboard/orders'},
   { label: 'Support', icon: <FaQuestionCircle />, path: '/vendor/dashboard/support' },
   { label: 'Logout', icon: <FaSignOutAlt />, path: '/vendor/dashboard/logout' },
 ];
