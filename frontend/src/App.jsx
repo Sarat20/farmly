@@ -4,6 +4,11 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+ 
+import About from './components/About';
+import Contact from './components/Contact';
+
+
 
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -15,6 +20,7 @@ import ProductDetails from './pages/ProductDetails';
 import Transactions from './pages/Transactions';
 import Wishlist from './pages/Wishlist';
 import UserLogout from './pages/UserLogout';
+import Checkout from './pages/Checkout';
 
 import Vendorlogin from './VendorPages/Vendorlogin';
 import VendorLayout from './VendorPages/VendorLayout';
@@ -27,6 +33,8 @@ import VendorSupport from './VendorPages/VendorSupport';
 
 import { UserProvider } from './context/UserContext'; // ← import the provider
 
+import AddressManager from './pages/Address';
+
 const App = () => {
   return (
     <UserProvider>
@@ -36,6 +44,8 @@ const App = () => {
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact-us" element={<Contact />} />
 
           {/* Buyer Routes */}
           <Route path="/user" element={<Buyer />}>
@@ -46,6 +56,9 @@ const App = () => {
             <Route path="transactions" element={<Transactions />} />
             <Route path="wishlist" element={<Wishlist />} />
             <Route path="logout" element={<UserLogout />} />
+            <Route path="checkout" element={<Checkout />} />
+
+            <Route path="addresses" element={<AddressManager />} />
           </Route>
 
           {/* Vendor Login Route */}

@@ -10,10 +10,8 @@ const ProductDetails = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Pull methods from context
   const { addToCart, addToWishlist } = useContext(UserContext);
 
-  // Local state for transient notifications
   const [notification, setNotification] = useState('');
 
   useEffect(() => {
@@ -23,7 +21,7 @@ const ProductDetails = () => {
         if (res.data.success) {
           setProduct({
             ...res.data.product,
-            Rating: Math.floor(Math.random() * 3) + 3,
+            Rating: Math.floor(Math.random() * 3) + 3, // Random rating 3-5
           });
         } else {
           setProduct(null);
@@ -39,7 +37,6 @@ const ProductDetails = () => {
     fetchProduct();
   }, [id]);
 
-  // Show a notification for 2 seconds
   const showNotification = (message) => {
     setNotification(message);
     setTimeout(() => {
@@ -57,12 +54,12 @@ const ProductDetails = () => {
     showNotification('Added to Wishlist!');
   };
 
-  if (loading) return <p className="p-4">Loading product details...</p>;
+  // ✅ Proper loading and error handling
+  if (loading) return <p className="p-4">Loading product...</p>;
   if (!product) return <p className="p-4">Product not found.</p>;
 
   return (
     <div className="p-4 max-w-4xl mx-auto">
-      {/* Transient notification banner */}
       {notification && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-blue-100 text-blue-800 px-4 py-2 rounded shadow-lg">
           {notification}
@@ -74,25 +71,25 @@ const ProductDetails = () => {
       </Link>
 
       <div className="flex flex-col md:flex-row gap-6">
-        {/* Product Image */}
         <img
           src={product.Image}
           alt={product.Name}
           className="w-full md:w-1/2 h-auto object-cover rounded mb-4 md:mb-0"
         />
 
-        {/* Product Details */}
         <div className="flex-1">
           <h1 className="text-3xl font-bold mb-2">{product.Name}</h1>
           <p className="text-gray-600 mb-1">Type: {product.Type}</p>
           <p className="text-gray-900 text-xl font-semibold mb-2">₹{product.Price}</p>
           <p className="text-gray-600 mb-2">Quantity Available: {product.Quantity}</p>
+
           <div className="flex items-center gap-1 text-yellow-500 mb-2">
             {[...Array(product.Rating)].map((_, i) => (
               <FaStar key={i} />
             ))}
             <span className="text-gray-700 ml-1">({product.Rating})</span>
           </div>
+
           <p className="text-sm text-gray-700 mb-1">
             Vendor: {product?.Vendor?.Name || 'Unknown'}
           </p>
@@ -101,7 +98,6 @@ const ProductDetails = () => {
           </p>
           <p className="text-gray-800 mb-4">{product.Description || 'No description available.'}</p>
 
-          {/* Add to Cart & Wishlist Buttons */}
           <div className="flex space-x-4">
             <button
               onClick={handleAddToCart}

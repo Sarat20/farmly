@@ -10,6 +10,11 @@ const ProductSchema = new mongoose.Schema({
   Description: { type: String },
   Price: { type: Number, required: true },
   Quantity: { type: Number, required: true },
+  QuantityUnit: {
+    type: String,
+    enum: ["kgs", "items"],
+    required: true,
+  },
   Type: {
     type: String,
     enum: [
@@ -20,7 +25,7 @@ const ProductSchema = new mongoose.Schema({
     ],
     required: true,
   },
-  Image: { type: String, required: true }, // Cloudinary URL
+  Image: { type: String, required: true },
   CreatedAt: { type: Date, default: Date.now },
 });
 

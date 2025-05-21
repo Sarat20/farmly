@@ -263,49 +263,56 @@ const vendorRegister = async (req, res) => {
 
 
 const AddProduct = async (req, res) => {
-    try {
-        const { Name, Description, Price, Quantity, Type } = req.body;
+  try {
+    const { Name, Description, Price, Quantity, Type, QuantityUnit } = req.body;
 
-        console.log("Request Body:", req.body);
-        console.log("Uploaded File:", req.file);
+    console.log("Request Body:", req.body);
+    console.log("Uploaded File:", req.file);
 
-        if (!req.file) {
-            return res.status(400).json({ success: false, message: "Image is required" });
-        }
-
-        const imageFile = req.file;
-        console.log("Image File Details:", imageFile);
-
-        const normalizedPath = path.resolve(imageFile.path);
-        console.log("Normalized Path:", normalizedPath);
-
-        let imageUrl;
-        try {
-            const imageUpload = await cloudinary.uploader.upload(normalizedPath, { resource_type: "image" });
-            imageUrl = imageUpload.secure_url;
-            console.log("Image Uploaded to Cloudinary:", imageUrl);
-        } catch (error) {
-            console.error("Error during Cloudinary upload:", error);
-            return res.status(500).json({ success: false, message: "Image upload failed" });
-        }
-
-      
-        const newProduct = new ProductModel({
-            Vendor: req.user.id,
-            Name,
-            Description,
-            Price: Number(Price), 
-            Quantity: Number(Quantity), 
-            Type: Type.replace(/'/g, ''), 
-            Image: imageUrl,
-        });
-
-        await newProduct.save();
-        res.status(201).json({ success: true, message: "Product added successfully" });
-    } catch (error) {
-        console.error("Add Product Error:", error);
-        res.status(500).json({ success: false, message: "Internal Server Error" });
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "Image is required" });
     }
+
+    // Validate QuantityUnit (optional but recommended)
+    const validUnits = ["kgs", "items"];
+    if (!QuantityUnit || !validUnits.includes(QuantityUnit)) {
+      return res.status(400).json({ success: false, message: "Invalid or missing QuantityUnit" });
+    }
+
+    const imageFile = req.file;
+    console.log("Image File Details:", imageFile);
+
+    const normalizedPath = path.resolve(imageFile.path);
+    console.log("Normalized Path:", normalizedPath);
+
+    let imageUrl;
+    try {
+      const imageUpload = await cloudinary.uploader.upload(normalizedPath, { resource_type: "image" });
+      imageUrl = imageUpload.secure_url;
+      console.log("Image Uploaded to Cloudinary:", imageUrl);
+    } catch (error) {
+      console.error("Error during Cloudinary upload:", error);
+      return res.status(500).json({ success: false, message: "Image upload failed" });
+    }
+
+    const newProduct = new ProductModel({
+      Vendor: req.user.id,
+      Name,
+      Description,
+      Price: Number(Price),
+      Quantity: Number(Quantity),
+      QuantityUnit,  // <-- add this line
+      Type: Type.replace(/'/g, ''),
+      Image: imageUrl,
+    });
+
+    await newProduct.save();
+
+    res.status(201).json({ success: true, message: "Product added successfully" });
+  } catch (error) {
+    console.error("Add Product Error:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
 };
 
 const getVendorProducts = async (req, res) => {

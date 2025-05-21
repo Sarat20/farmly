@@ -9,6 +9,7 @@ const VendorProfile = () => {
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [imageFile, setImageFile] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     const fetchVendorProfile = async () => {
@@ -41,6 +42,7 @@ const VendorProfile = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
+      setSuccessMessage('');
       const token = localStorage.getItem('vtoken');
       const formDataToSend = new FormData();
 
@@ -65,6 +67,7 @@ const VendorProfile = () => {
 
       setVendor(response.data.updatedVendor);
       setEditMode(false);
+      setSuccessMessage('Profile saved successfully!');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update vendor profile');
     } finally {
@@ -93,66 +96,68 @@ const VendorProfile = () => {
   ];
 
   return (
-    //<div className="w-full min-h-screen bg-blue-500 p-6">
-      <div className="max-w-5xl mx-auto shadow-xl bg-blue-400 rounded-lg p-6 mt-10">
-        <h2 className="text-2xl font-bold mb-6 text-center">Vendor Profile</h2>
+    <div className="max-w-5xl mx-auto shadow-xl bg-white rounded-lg p-6 mt-10">
+      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Vendor Profile</h2>
 
-        {vendor?.ProfilePhoto && (
-          <div className="flex  mb-6">
-            <img
-              src={vendor.ProfilePhoto}
-              alt="Vendor"
-              className="w-28 h-28 rounded-full border object-cover"
-            />
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {fields.map(({ label, name }) => (
-            <div key={name} className="flex items-center">
-              <label className="w-36 text-gray-700 font-medium">{label}:</label>
-              {editMode ? (
-                <input
-                  type="text"
-                  name={name}
-                  value={formData[name] || ''}
-                  onChange={handleChange}
-                  className="flex-1 px-3 py-1 border rounded-md text-sm"
-                />
-              ) : (
-                <p className="flex-1 text-sm text-gray-800">{vendor[name] || 'Not provided'}</p>
-              )}
-            </div>
-          ))}
+      {vendor?.ProfilePhoto && (
+        <div className="flex justify-center mb-6">
+          <img
+            src={vendor.ProfilePhoto}
+            alt="Vendor"
+            className="w-28 h-28 rounded-full border object-cover"
+          />
         </div>
+      )}
 
-        {editMode && (
-          <div className="mt-4">
-            <label className="block font-medium mb-1">Profile Photo:</label>
-            <input type="file" onChange={handleFileChange} className="text-sm" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {fields.map(({ label, name }) => (
+          <div key={name} className="flex items-center">
+            <label className="w-36 text-gray-700 font-medium">{label}:</label>
+            {editMode ? (
+              <input
+                type="text"
+                name={name}
+                value={formData[name] || ''}
+                onChange={handleChange}
+                className="flex-1 px-3 py-1 border rounded-md text-sm"
+              />
+            ) : (
+              <p className="flex-1 text-sm text-gray-800">{vendor[name] || 'Not provided'}</p>
+            )}
           </div>
-        )}
-
-        <div className="mt-6 text-center">
-          {editMode ? (
-            <button
-              onClick={handleSave}
-              className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-              disabled={saving}
-            >
-              {saving ? 'Saving...' : 'Save'}
-            </button>
-          ) : (
-            <button
-              onClick={() => setEditMode(true)}
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              Edit
-            </button>
-          )}
-        </div>
+        ))}
       </div>
-   //</div>
+
+      {editMode && (
+        <div className="mt-4">
+          <label className="block font-medium mb-1">Profile Photo:</label>
+          <input type="file" onChange={handleFileChange} className="text-sm" />
+        </div>
+      )}
+
+      <div className="mt-6 text-center">
+        {editMode ? (
+          <button
+            onClick={handleSave}
+            className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+            disabled={saving}
+          >
+            {saving ? 'Saving...' : 'Save'}
+          </button>
+        ) : (
+          <button
+            onClick={() => setEditMode(true)}
+            className="px-6 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 cursor-pointer"
+          >
+            Edit
+          </button>
+        )}
+      </div>
+
+      {successMessage && (
+        <p className="mt-4 text-green-600 text-center font-medium">{successMessage}</p>
+      )}
+    </div>
   );
 };
 
