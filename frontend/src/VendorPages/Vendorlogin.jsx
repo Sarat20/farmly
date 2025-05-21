@@ -120,7 +120,7 @@ const Vendorlogin = () => {
   );
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-white">
+    <div className="flex items-center justify-center py-4 bg-white">
       <div className={`border border-black rounded-xl p-8 w-full ${state === 'Login' ? 'max-w-sm' : 'max-w-3xl'}`}>
         <h2 className="text-3xl font-bold text-center mb-6">
           {state === 'SignUp' ? 'Farmer Registration' : 'Vendor Login'}

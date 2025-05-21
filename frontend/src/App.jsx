@@ -35,6 +35,7 @@ import VendorSupport from './VendorPages/VendorSupport';
 
 import AddressManager from './pages/Address';
 import VendorOrder from './VendorPages/VendorOrder';
+import VendorPayment from './VendorPages/VendorPayment';
 
 const App = () => {
   return (
@@ -74,6 +75,7 @@ const App = () => {
             <Route path="logout" element={<VendorLogout />} />
             <Route path="orders" element={<VendorOrder/>}/>
             <Route path="support" element={<VendorSupport />} />
+            <Route path="payments" element={<VendorPayment/>}/>
           </Route>
         </Routes>
         <Footer />
