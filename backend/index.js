@@ -29,11 +29,18 @@ connectCloudinary();
 app.listen(PORT,()=>console.log(`server is running on port ${PORT}`))
 
 app.use(cors({
-    origin: 'http://localhost:5173', // <--- IMPORTANT: Replace with your actual frontend URL/port
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true, // If you're sending cookies/auth headers
-    optionsSuccessStatus: 204, // Some legacy browsers (IE11, various SmartTVs) choke on 200
+    origin: function (origin, callback) {
+       
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
+    credentials: true
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
