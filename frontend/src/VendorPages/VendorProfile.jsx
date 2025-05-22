@@ -15,7 +15,7 @@ const VendorProfile = () => {
     const fetchVendorProfile = async () => {
       try {
         const token = localStorage.getItem('vtoken');
-        const response = await axios.get('http://localhost:4000/api/vendor/profile', {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/vendor/profile`, {
           headers: { vtoken: token },
         });
         setVendor(response.data.vendor);
@@ -55,7 +55,7 @@ const VendorProfile = () => {
       }
 
       const response = await axios.put(
-        'http://localhost:4000/api/vendor/update-profile',
+        `${import.meta.env.VITE_BACKEND_URL}/api/vendor/update-profile`,
         formDataToSend,
         {
           headers: {

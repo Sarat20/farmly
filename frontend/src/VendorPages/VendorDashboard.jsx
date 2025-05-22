@@ -1,4 +1,3 @@
-// src/pages/VendorDashboard.jsx
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -17,7 +16,7 @@ const VendorDashboard = () => {
     const [totalProducts, setTotalProducts] = useState(0);
     const [totalOrders, setTotalOrders] = useState(0);
     const [totalEarnings, setTotalEarnings] = useState(0);
-    const [productsByCategory, setProductsByCategory] = useState({}); // Stores products grouped by category
+    const [productsByCategory, setProductsByCategory] = useState({}); 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -35,15 +34,15 @@ const VendorDashboard = () => {
                 }
 
                 const fetches = [
-                    fetch('http://localhost:4000/api/vendor/profile', { headers: { 'vtoken': vtoken } }),
-                    fetch('http://localhost:4000/api/vendor/my-products', { headers: { 'vtoken': vtoken } }),
-                    fetch('http://localhost:4000/api/vendor/payments', { headers: { 'vtoken': vtoken } }),
-                    fetch('http://localhost:4000/api/vendor/order-count', { headers: { 'vtoken': vtoken } })
+                    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/vendor/profile`, { headers: { 'vtoken': vtoken } }),
+                    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/vendor/my-products`, { headers: { 'vtoken': vtoken } }),
+                    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/vendor/payments`, { headers: { 'vtoken': vtoken } }),
+                    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/vendor/order-count`, { headers: { 'vtoken': vtoken } })
                 ];
 
                 const [profileRes, productsRes, paymentsRes, orderCountRes] = await Promise.all(fetches);
 
-                // Handle Profile Data
+             
                 if (profileRes.ok) {
                     const profileData = await profileRes.json();
                     if (profileData.success && profileData.vendor) {
@@ -56,15 +55,13 @@ const VendorDashboard = () => {
                     console.error('Failed to fetch vendor profile:', profileRes.statusText);
                 }
 
-                // Handle Products Data
                 if (productsRes.ok) {
                     const productsData = await productsRes.json();
                     if (productsData.success) {
                         setTotalProducts(productsData.products.length);
 
-                        // FIX APPLIED HERE: Changed product.Category to product.Type
                         const groupedProducts = productsData.products.reduce((acc, product) => {
-                            const category = product.Type || 'Other'; // *** HERE'S THE CHANGE ***
+                            const category = product.Type || 'Other'; 
                             if (!acc.hasOwnProperty(category)) {
                                 acc[category] = [];
                             }
@@ -80,7 +77,6 @@ const VendorDashboard = () => {
                     console.error('Failed to fetch vendor products:', productsRes.statusText);
                 }
 
-                // Handle Payments Data (for earnings)
                 if (paymentsRes.ok) {
                     const paymentsData = await paymentsRes.json();
                     if (paymentsData.success && paymentsData.summary) {
@@ -92,7 +88,7 @@ const VendorDashboard = () => {
                     console.error('Failed to fetch vendor payments:', paymentsRes.statusText);
                 }
 
-                // Handle Order Count Data
+            
                 if (orderCountRes.ok) {
                     const orderCountData = await orderCountRes.json();
                     if (orderCountData.success) {
@@ -131,12 +127,11 @@ const VendorDashboard = () => {
         );
     }
 
-    // Determine which products to show as "Recent Products"
-    // Assuming 'CreatedAt' field exists and is a valid date string from MongoDB
+
     const allProducts = Object.values(productsByCategory).flat().sort((a, b) => {
         const dateA = new Date(a.CreatedAt);
         const dateB = new Date(b.CreatedAt);
-        return dateB - dateA; // Sort descending (most recent first)
+        return dateB - dateA; 
     });
     const recentProducts = allProducts.slice(0, 2);
 
@@ -202,7 +197,7 @@ const VendorDashboard = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     {productTypes.map((type, i) => {
                         const productsInType = productsByCategory.hasOwnProperty(type.name) ? productsByCategory[type.name] : [];
-                        const displayedProducts = productsInType.slice(0, 3); // Show up to 3 product names
+                        const displayedProducts = productsInType.slice(0, 3); 
 
                         return (
                             <div key={i} className={`p-3 rounded shadow text-sm text-gray-800 ${type.color} flex flex-col`}>

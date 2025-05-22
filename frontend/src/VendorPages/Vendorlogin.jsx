@@ -1,4 +1,3 @@
-// src/pages/Vendorlogin.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -33,14 +32,14 @@ const Vendorlogin = () => {
     setErrorMsg('');
     try {
       const { email, password } = formData;
-      const response = await axios.post('http://localhost:4000/api/vendor/login', {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/vendor/login`, {
         Email: email,
         Password: password,
       });
 
       if (response.data.token) {
         localStorage.setItem("vtoken", response.data.token);
-        localStorage.removeItem('token'); // <-- IMPORTANT: Clear customer token here
+        localStorage.removeItem('token'); 
         alert('Login successful!');
         navigate('/vendor/dashboard');
       } else {
@@ -81,16 +80,16 @@ const Vendorlogin = () => {
       form.append('Aadhar', formData.aadhaar);
 
       if (profilePhoto) {
-        form.append('ProfilePhoto', profilePhoto); // Must match 'req.file' field name
+        form.append('ProfilePhoto', profilePhoto);
       }
 
-      const response = await axios.post('http://localhost:4000/api/vendor/register', form, {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/vendor/register`, form, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       if (response.data.token) {
         localStorage.setItem("vtoken", response.data.token);
-        localStorage.removeItem('token'); // <-- IMPORTANT: Clear customer token here
+        localStorage.removeItem('token'); 
         alert('Registration successful!');
         navigate('/vendor/dashboard');
       } else {

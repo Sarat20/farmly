@@ -1,4 +1,3 @@
-// src/pages/VendorPayments.jsx
 
 import React, { useState, useEffect } from 'react';
 
@@ -19,7 +18,7 @@ const VendorPayments = () => {
                     return;
                 }
 
-                const response = await fetch(`http://localhost:4000/api/vendor/payments`, {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/vendor/payments`, {
                     headers: { 'vtoken': vendorToken },
                 });
 

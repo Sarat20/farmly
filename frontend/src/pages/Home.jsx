@@ -1,5 +1,5 @@
 import React from 'react'
-import homelogo from '../assets/homelogo.png' // Ensure this path is correct
+import homelogo from '../assets/homelogo.png' 
 import {useNavigate} from 'react-router-dom'
 
 const Home = () => {
@@ -11,7 +11,7 @@ const Home = () => {
           src={homelogo}
           alt="image"
           className='h-[500px] w-[500px]'
-          loading="lazy" // Added for performance: tells the browser to load when it's near the viewport
+          loading="lazy" 
         />
       </div>
       <div className='flex flex-col space-y-10 mt-10'>

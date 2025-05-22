@@ -1,4 +1,3 @@
-// src/pages/PlaceOrder.jsx
 import React, { useContext, useState } from 'react';
 import { UserContext } from '../context/UserContext';
 import axios from 'axios';

@@ -1,4 +1,3 @@
-// src/pages/Checkout.jsx
 import React, { useState, useContext, useEffect } from 'react';
 import { UserContext } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
@@ -12,7 +11,6 @@ const Checkout = () => {
     const [paymentMethod, setPaymentMethod] = useState('COD');
     const navigate = useNavigate();
 
-    // const API_BASE_URL = 'http://localhost:5000/api'; // Not used, can be removed
 
     useEffect(() => {
         setAddresses(contextAddresses);
@@ -50,21 +48,20 @@ const Checkout = () => {
 
         const orderAddress = addresses[selectedAddressIndex];
 
-        // Prepare the order data for the backend
         const orderData = {
-            userId: userId, // Get userId from context
+            userId: userId, 
             items: cart.map((item) => ({
                 productId: item._id,
                 quantity: item.quantity,
-                Price: item.Price, // Include price for backend calculation
+                Price: item.Price, 
             })),
-            address: orderAddress, // *** SEND THE FULL ADDRESS OBJECT ***
+            address: orderAddress,
             phone,
             paymentMethod,
         };
 
         try {
-            const response = await fetch(`http://localhost:4000/api/orders/place`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/orders/place`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -76,8 +73,8 @@ const Checkout = () => {
 
             if (data.success) {
                 alert('Order Placed Successfully!');
-                clearCart(); // Clear cart after successful order
-                navigate('/user/orders'); // Navigate to user's orders page
+                clearCart(); 
+                navigate('/user/orders'); 
             } else {
                 alert(`Order placement failed: ${data.message}`);
             }

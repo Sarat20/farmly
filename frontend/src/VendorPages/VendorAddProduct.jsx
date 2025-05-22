@@ -8,7 +8,7 @@ const VendorAddProduct = () => {
         Price: '',
         Quantity: '',
         Type: 'Fresh Produce',
-        QuantityUnit: 'kgs', // default
+        QuantityUnit: 'kgs',
     });
     const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -42,7 +42,7 @@ const VendorAddProduct = () => {
         try {
             setLoading(true);
             const response = await axios.post(
-                'http://localhost:4000/api/vendor/add-product',
+                `${import.meta.env.VITE_BACKEND_URL}/api/vendor/add-product`,
                 formData,
                 {
                     headers: {

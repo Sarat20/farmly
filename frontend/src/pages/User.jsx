@@ -1,7 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import UserSideBar from '../components/UserSideBar';
-
+import UserSideBar from '../components/userSideBar';
 const User = () => {
   return (
     <div className="flex flex-col min-h-screen">

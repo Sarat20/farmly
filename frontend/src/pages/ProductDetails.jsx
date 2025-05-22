@@ -1,8 +1,7 @@
-// src/pages/ProductDetails.jsx
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
-import { FaShoppingCart, FaHeart } from 'react-icons/fa'; // Removed FaStar
+import { FaShoppingCart, FaHeart } from 'react-icons/fa'; 
 import { UserContext } from '../context/UserContext';
 
 const ProductDetails = () => {
@@ -17,9 +16,9 @@ const ProductDetails = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const res = await axios.get(`http://localhost:4000/api/products/${id}`);
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`);
                 if (res.data.success) {
-                    setProduct(res.data.product); // Removed static Rating generation
+                    setProduct(res.data.product); 
                 } else {
                     setProduct(null);
                 }
@@ -51,14 +50,12 @@ const ProductDetails = () => {
         showNotification('Added to Wishlist!');
     };
 
-    // ✅ Proper loading and error handling
     if (loading) return <p className="p-4">Loading product...</p>;
     if (!product) return <p className="p-4">Product not found.</p>;
 
     return (
         <div className="p-4 max-w-4xl mx-auto">
             {notification && (
-                // Adjusted top position and z-index for the notification
                 <div className="fixed top-[70px] left-1/2 transform -translate-x-1/2 bg-blue-100 text-blue-800 px-4 py-2 rounded shadow-lg z-[1000]">
                     {notification}
                 </div>

@@ -1,4 +1,3 @@
-// src/pages/Vendorlogin.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -33,24 +32,20 @@ const Vendorlogin = () => {
     setErrorMsg('');
     try {
       const { email, password } = formData;
-      const response = await axios.post('http://localhost:4000/api/vendor/login', {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/vendor/login`, {
         Email: email,
         Password: password,
       });
 
       if (response.data.token) {
         localStorage.setItem("vtoken", response.data.token);
-        localStorage.removeItem('token'); // Clear customer token if present
+        localStorage.removeItem('token'); 
 
-        // *** IMPORTANT: ADD THIS LINE BASED ON YOUR BACKEND RESPONSE ***
-        // Example if backend returns: { ..., "vendor": { "_id": "VENDOR_ID" } }
+
         if (response.data.vendor && response.data.vendor._id) {
             localStorage.setItem("vendorId", response.data.vendor._id);
         }
-        // OR if backend returns: { ..., "vendorId": "VENDOR_ID" }
-        // if (response.data.vendorId) {
-        //     localStorage.setItem("vendorId", response.data.vendorId);
-        // }
+      
 
 
         alert('Login successful!');
@@ -93,26 +88,22 @@ const Vendorlogin = () => {
       form.append('Aadhar', formData.aadhaar);
 
       if (profilePhoto) {
-        form.append('ProfilePhoto', profilePhoto); // Must match 'req.file' field name
+        form.append('ProfilePhoto', profilePhoto);
       }
 
-      const response = await axios.post('http://localhost:4000/api/vendor/register', form, {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/vendor/register`, form, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       if (response.data.token) {
         localStorage.setItem("vtoken", response.data.token);
-        localStorage.removeItem('token'); // Clear customer token if present
+        localStorage.removeItem('token'); 
 
-        // *** IMPORTANT: ADD THIS LINE BASED ON YOUR BACKEND RESPONSE ***
-        // Example if backend returns: { ..., "vendor": { "_id": "VENDOR_ID" } }
+    
         if (response.data.vendor && response.data.vendor._id) {
             localStorage.setItem("vendorId", response.data.vendor._id);
         }
-        // OR if backend returns: { ..., "vendorId": "VENDOR_ID" }
-        // if (response.data.vendorId) {
-        //     localStorage.setItem("vendorId", response.data.vendorId);
-        // }
+   
 
         alert('Registration successful!');
         navigate('/vendor/dashboard');

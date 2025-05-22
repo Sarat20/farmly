@@ -1,7 +1,6 @@
-// src/pages/Product.jsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { FaSearch } from 'react-icons/fa'; // Removed FaStar, FaShoppingCart, FaHeart
+import { FaSearch } from 'react-icons/fa'; 
 import { Link } from 'react-router-dom';
 
 const Product = () => {
@@ -14,9 +13,8 @@ const Product = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const res = await axios.get('http://localhost:4000/api/products/all-products');
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/all-products`);
                 if (res.data.success) {
-                    // Removed the static rating generation
                     setProducts(res.data.products);
                 }
             } catch (error) {
@@ -32,7 +30,6 @@ const Product = () => {
         setSearchTerm(searchTermInput);
     };
 
-    // Removed handleAddToCart and handleAddToWishlist functions as their corresponding buttons are removed
 
     const filteredProducts = products
         .filter((product) =>
@@ -42,7 +39,6 @@ const Product = () => {
         .sort((a, b) => {
             if (sortOption === 'price-low') return a.Price - b.Price;
             if (sortOption === 'price-high') return b.Price - a.Price;
-            // Removed rating-high sort option
             return 0;
         });
 
@@ -50,7 +46,6 @@ const Product = () => {
         <div className="p-4">
             <h2 className="text-2xl font-semibold mb-4">All Products</h2>
 
-            {/* Search / Filter / Sort Form */}
             <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4 mb-4 items-center">
                 <div className="relative w-full sm:w-1/2">
                     <input

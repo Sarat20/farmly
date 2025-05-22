@@ -1,4 +1,3 @@
-// src/VendorPages/VendorLayout.jsx
 import React from 'react';
 import VendorSidebar from './VendorSidebar';
 import { Outlet } from 'react-router-dom';

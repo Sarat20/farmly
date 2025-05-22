@@ -1,6 +1,5 @@
-// src/pages/VendorOrder.jsx (No changes needed if you used my previous version)
 import React, { useState, useEffect } from 'react';
-import moment from 'moment'; // For formatting dates
+import moment from 'moment'; 
 
 const VendorOrder = () => {
     const [orders, setOrders] = useState([]);
@@ -8,7 +7,7 @@ const VendorOrder = () => {
     const [error, setError] = useState(null);
 
     const fetchVendorOrders = async () => {
-        const vtoken = localStorage.getItem('vtoken'); // Get the vendor's token
+        const vtoken = localStorage.getItem('vtoken'); 
 
         if (!vtoken) {
             setError('No vendor token found. Please log in as a vendor.');
@@ -19,13 +18,11 @@ const VendorOrder = () => {
 
         try {
             setLoading(true);
-            // API URL is now simply /api/orders/vendor
-            const apiUrl = `http://localhost:4000/api/orders/vendor`; 
+            const apiUrl = `${import.meta.env.VITE_BACKEND_URL}/api/orders/vendor`; 
             console.log("Attempting to fetch orders from:", apiUrl);
 
             const headers = {
                 'Content-Type': 'application/json',
-                // Using 'vtoken' header as per your authVendor middleware
                 'vtoken': vtoken, 
             };
 
@@ -53,7 +50,7 @@ const VendorOrder = () => {
 
     useEffect(() => {
         fetchVendorOrders();
-    }, []); // Empty dependency array: runs only once on mount
+    }, []);
 
     const handleStatusChange = async (orderId, itemId, newStatus) => {
         const orderToUpdate = orders.find(o => o._id === orderId);
@@ -64,7 +61,7 @@ const VendorOrder = () => {
             return;
         }
 
-        const vtoken = localStorage.getItem('vtoken'); // Get the vendor's token
+        const vtoken = localStorage.getItem('vtoken'); 
         if (!vtoken) {
             alert('Authentication token missing. Please log in again.');
             return;
@@ -73,11 +70,10 @@ const VendorOrder = () => {
         try {
             const headers = {
                 'Content-Type': 'application/json',
-                // Using 'vtoken' header as per your authVendor middleware
                 'vtoken': vtoken, 
             };
 
-            const response = await fetch(`http://localhost:4000/api/orders/${orderId}/items/${itemId}`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/orders/${orderId}/items/${itemId}`, {
                 method: 'PATCH',
                 headers: headers,
                 body: JSON.stringify({ status: newStatus }),
@@ -87,7 +83,7 @@ const VendorOrder = () => {
 
             if (data.success) {
                 alert('Order item status updated successfully!');
-                fetchVendorOrders(); // Re-fetch orders to show updated status
+                fetchVendorOrders(); 
             } else {
                 alert(`Failed to update status: ${data.message || 'Unknown error'}`);
             }

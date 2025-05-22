@@ -1,13 +1,11 @@
-// src/context/UserContext.jsx
+
 import React, { createContext, useState, useEffect } from 'react';
 
 export const UserContext = createContext({
     cart: [],
     wishlist: [],
     addresses: [],
-    // Assuming you have a way to get the logged-in user's ID
-    // For demonstration, we'll add a placeholder. In a real app,
-    // this would come from an authentication context.
+   
     userId: '60c72b2f9b1d8e001c8a4d7d', // Placeholder User ID
     addToCart: () => {},
     addToWishlist: () => {},
@@ -48,8 +46,8 @@ export const UserProvider = ({ children }) => {
         }
     });
 
-    // Placeholder for user ID. In a real app, this would be dynamic.
-    const [userId, setUserId] = useState('664c1e4f24f8d5573426090e'); // Example User ID, replace with actual user ID from auth
+
+    const [userId, setUserId] = useState('664c1e4f24f8d5573426090e');
 
     useEffect(() => {
         localStorage.setItem('cart', JSON.stringify(cart));
@@ -127,7 +125,7 @@ export const UserProvider = ({ children }) => {
                 cart,
                 wishlist,
                 addresses,
-                userId, // Provide userId from context
+                userId, 
                 addToCart,
                 addToWishlist,
                 removeFromCart,

@@ -1,4 +1,3 @@
-// src/pages/Orders.jsx
 import React, { useState, useEffect, useContext, useCallback } from 'react'; // Import useCallback
 import { UserContext } from '../context/UserContext';
 import moment from 'moment';
@@ -9,9 +8,7 @@ const UserOrders = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // --- MOVE fetchOrders OUTSIDE useEffect ---
-    // Use useCallback to memoize the function, preventing unnecessary re-renders
-    // and linting warnings about missing dependencies in useEffect.
+   
     const fetchOrders = useCallback(async () => {
         if (!userId) {
             setError('User not logged in or user ID not available.');
@@ -19,8 +16,8 @@ const UserOrders = () => {
             return;
         }
         try {
-            setLoading(true); // Set loading true before fetching
-            const response = await fetch(`http://localhost:4000/api/orders/user/${userId}`);
+            setLoading(true);
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/orders/user/${userId}`);
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({ message: response.statusText }));
                 throw new Error(`HTTP error! status: ${response.status}, Message: ${errorData.message}`);
@@ -37,11 +34,11 @@ const UserOrders = () => {
         } finally {
             setLoading(false);
         }
-    }, [userId]); // Add userId to useCallback's dependency array
+    }, [userId]);
 
     useEffect(() => {
         fetchOrders();
-    }, [fetchOrders]); // Now useEffect depends on fetchOrders (which depends on userId)
+    }, [fetchOrders]); 
 
     const handleCancelOrderItem = async (orderId, itemId) => {
         if (!window.confirm('Are you sure you want to cancel this item?')) {
@@ -49,19 +46,19 @@ const UserOrders = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:4000/api/orders/${orderId}/items/${itemId}/cancel`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/orders/${orderId}/items/${itemId}/cancel`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ userId: userId }), // Send userId for backend authorization
+                body: JSON.stringify({ userId: userId }), 
             });
 
             const data = await response.json();
 
             if (data.success) {
                 alert('Order item cancelled successfully!');
-                fetchOrders(); // This will now correctly call the outer fetchOrders
+                fetchOrders(); 
             } else {
                 alert(`Cancellation failed: ${data.message}`);
             }
