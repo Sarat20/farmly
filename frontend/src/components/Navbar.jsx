@@ -1,3 +1,4 @@
+// frontend/src/components/Navbar.jsx
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import farmly_logo from '../assets/farmly_logo.png';
@@ -62,7 +63,7 @@ const Navbar = () => {
 
                 {/* Show User Login if no one is logged in */}
                 {!isAuthenticated && (
-                    <NavLink to='/user/login' className='text-base sm:text-lg hover:underline'>User Login</NavLink> // Point to the new user login route
+                    <NavLink to='/user/login' className='text-base sm:text-lg hover:underline'>User Login</NavLink>
                 )}
 
                 {/* Show Vendor Login only if no one is logged in */}
@@ -84,7 +85,7 @@ const Navbar = () => {
                     </button>
                 ) : (
                     <NavLink
-                        to='/login' // This will take them to the general login/signup page as before
+                        to='/login' // This will take them to the general user login/signup page
                         className='px-3 py-1 sm:px-4 sm:py-2 text-white text-base sm:text-lg rounded-full
                                         transition-transform duration-500 ease-in-out hover:scale-110 bg-gray-800'
                     >

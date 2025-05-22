@@ -1,3 +1,4 @@
+// src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -10,8 +11,8 @@ import Contact from './components/Contact';
 import { UserProvider } from './context/UserContext';
 
 import Home from './pages/Home';
-import Login from './pages/Login'; // Your existing Login component
-import Buyer from './pages/User'; // Renamed from Buyer to User for clarity if it's a layout
+import Login from './pages/Login'; // Correctly imports your User Login/Signup component
+import Buyer from './pages/User'; // Assuming 'User' is a layout or dashboard for regular users
 import Cart from './pages/Cart';
 import Orders from './pages/Orders';
 import Product from './pages/Product';
@@ -20,6 +21,7 @@ import Wishlist from './pages/Wishlist';
 import UserLogout from './pages/UserLogout';
 import Checkout from './pages/Checkout';
 
+// This import must point to your dedicated Vendor Login/Signup component
 import Vendorlogin from './VendorPages/Vendorlogin';
 import VendorLayout from './VendorPages/VendorLayout';
 import VendorDashboard from './VendorPages/VendorDashboard';
@@ -41,12 +43,16 @@ const App = () => {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/user/login" element={<Login />} /> {/* NEW: Route for User Login */}
+
+          {/* Routes that use your combined User Login/Signup component */}
+          <Route path="/login" element={<Login />} />          {/* For general 'Create Account' link */}
+          <Route path="/user/login" element={<Login />} />    {/* For explicit 'User Login' link */}
+          {/* Add a user registration route if needed, e.g., <Route path="/user/register" element={<Login />} /> */}
+
           <Route path="/about" element={<About />} />
           <Route path="/contact-us" element={<Contact />} />
 
-          {/* Buyer/User Routes */}
+          {/* Buyer/User Protected Routes */}
           <Route path="/user" element={<Buyer />}>
             <Route path="products" element={<Product />} />
             <Route path="products/:id" element={<ProductDetails />} />
@@ -58,7 +64,7 @@ const App = () => {
             <Route path="addresses" element={<AddressManager />} />
           </Route>
 
-          {/* Vendor Login Route */}
+          {/* Vendor Login/Signup Route */}
           <Route path="/vendor" element={<Vendorlogin />} />
 
           {/* Vendor Dashboard & Protected Pages */}
