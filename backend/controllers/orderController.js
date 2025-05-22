@@ -4,7 +4,7 @@ import ProductModel from '../models/ProductModel.js';
 import OrderModel from '../models/OrderModel.js';
 import mongoose from 'mongoose';
 
-// Place order (no change)
+// Place order (no change from your provided code)
 const placeOrder = async (req, res) => {
     try {
         const { userId, items, address, phone, paymentMethod } = req.body;
@@ -24,7 +24,7 @@ const placeOrder = async (req, res) => {
 
                 return {
                     product: product._id,
-                    vendor: product.Vendor,
+                    vendor: product.Vendor, // Ensure product.Vendor is the vendor's ObjectId stored correctly
                     quantity: item.quantity,
                     status: 'Pending',
                 };
@@ -54,7 +54,7 @@ const placeOrder = async (req, res) => {
     }
 };
 
-// Get orders for a specific user (no change)
+// Get orders for a specific user (no change from your provided code)
 const getUserOrders = async (req, res) => {
     try {
         const userId = req.params.userId;
@@ -75,37 +75,51 @@ const getUserOrders = async (req, res) => {
 };
 
 
-// Get orders for a vendor (no change)
+// Get orders for a vendor (UPDATED)
 const getOrdersForVendor = async (req, res) => {
     try {
-        const vendorId = req.params.vendorId;
+        // Get the vendor ID from the token payload, attached by authVendor middleware to req.user
+        const vendorId = req.user.id; // <--- IMPORTANT CHANGE!
 
         if (!vendorId) {
-            return res.status(400).json({ success: false, message: 'Vendor ID required.' });
+            return res.status(400).json({ success: false, message: 'Vendor ID not found in token payload after authentication.' });
         }
 
+        // Find orders where an item's 'vendor' field matches the authenticated vendor's ID
         const orders = await OrderModel.find({ 'items.vendor': vendorId })
-            .populate('user', 'name email')
-            .populate('items.product')
-            .lean();
+            .populate('user', 'name email') // Populate user name and email who placed the order
+            .populate({
+                path: 'items.product', // Populate product details for each item
+                select: 'Name Image Price QuantityUnit' // Select specific fields you need from product
+            })
+            .sort({ createdAt: -1 }) // Sort by most recent orders first
+            .lean(); // Use .lean() for faster query if you don't need Mongoose document methods/virtuals
 
+        // Your existing filtering logic is good for ensuring only relevant items are returned:
         const filteredOrders = orders.map(order => ({
             ...order,
-            items: order.items.filter(item => item.vendor && item.vendor.toString() === vendorId)
-        })).filter(order => order.items.length > 0);
+            items: order.items.filter(item => item.vendor && item.vendor.toString() === vendorId.toString())
+        })).filter(order => order.items.length > 0); // Filter out orders if they contain no items for this vendor
 
         res.json({ success: true, orders: filteredOrders });
     } catch (error) {
         console.error('Get orders for vendor error:', error);
-        res.status(500).json({ success: false, message: error.message });
+        res.status(500).json({ success: false, message: 'Server error fetching orders.' });
     }
 };
 
-// Update order item status (vendor only) - no change
+// Update order item status (vendor only) - UPDATED
 const updateOrderItemStatus = async (req, res) => {
     try {
         const { orderId, itemId } = req.params;
         const { status } = req.body;
+
+        // Get the vendor ID from the token payload for authorization
+        const vendorIdFromToken = req.user.id; // <--- IMPORTANT CHANGE!
+
+        if (!vendorIdFromToken) {
+            return res.status(400).json({ success: false, message: 'Vendor ID not found in token payload.' });
+        }
 
         if (!status) {
             return res.status(400).json({ success: false, message: 'Status is required.' });
@@ -116,14 +130,25 @@ const updateOrderItemStatus = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Invalid status value.' });
         }
 
-        const order = await OrderModel.findById(orderId);
-        if (!order) return res.status(404).json({ success: false, message: 'Order not found.' });
+        // Find the order AND ensure the specific item being updated belongs to the authenticated vendor
+        const order = await OrderModel.findOne({ 
+            _id: orderId, 
+            'items._id': itemId,
+            'items.vendor': vendorIdFromToken // Crucial: ensure this item's vendor matches the token's vendor
+        });
 
-        const item = order.items.id(itemId);
-        if (!item) return res.status(404).json({ success: false, message: 'Order item not found.' });
+        if (!order) {
+            // If order or item isn't found, or the item doesn't belong to this vendor
+            return res.status(404).json({ success: false, message: 'Order or item not found, or you do not have permission to update this item.' });
+        }
+
+        const item = order.items.id(itemId); // Find the item within the order
+        if (!item) {
+            // This check might be redundant if the findOne query above already found it, but good for safety
+            return res.status(404).json({ success: false, message: 'Order item not found in this order.' });
+        }
 
         item.status = status;
-
         await order.save();
 
         res.json({ success: true, order });
@@ -133,7 +158,7 @@ const updateOrderItemStatus = async (req, res) => {
     }
 };
 
-// NEW: User cancels order item
+// User cancels order item (no change from your provided code)
 const cancelOrderItem = async (req, res) => {
     try {
         const { orderId, itemId } = req.params;

@@ -1,4 +1,4 @@
-// src/pages/VendorOrder.jsx
+// src/pages/VendorOrder.jsx (No changes needed if you used my previous version)
 import React, { useState, useEffect } from 'react';
 import moment from 'moment'; // For formatting dates
 
@@ -6,25 +6,31 @@ const VendorOrder = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    // Use the correct Vendor ID from your MongoDB screenshot: 682e0bf155c02d192c8989d9
-    // This is crucial for your backend to find orders associated with this vendor.
-    const [vendorId, setVendorId] = useState('682e0bf155c02d192c8989d9');
-
-    console.log("VendorOrder component rendered.");
 
     const fetchVendorOrders = async () => {
-        console.log("fetchVendorOrders function called.");
-        if (!vendorId) {
-            setError('Vendor ID not available.');
+        const vtoken = localStorage.getItem('vtoken'); // Get the vendor's token
+
+        if (!vtoken) {
+            setError('No vendor token found. Please log in as a vendor.');
             setLoading(false);
-            console.error("Vendor ID is missing.");
+            console.error("Vendor token is missing. Aborting order fetch.");
             return;
         }
+
         try {
             setLoading(true);
-            const apiUrl = `http://localhost:4000/api/orders/vendor/${vendorId}`;
+            // API URL is now simply /api/orders/vendor
+            const apiUrl = `http://localhost:4000/api/orders/vendor`; 
             console.log("Attempting to fetch orders from:", apiUrl);
-            const response = await fetch(apiUrl);
+
+            const headers = {
+                'Content-Type': 'application/json',
+                // Using 'vtoken' header as per your authVendor middleware
+                'vtoken': vtoken, 
+            };
+
+            const response = await fetch(apiUrl, { headers });
+
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({ message: response.statusText }));
                 throw new Error(`HTTP error! status: ${response.status}, Message: ${errorData.message}`);
@@ -46,26 +52,34 @@ const VendorOrder = () => {
     };
 
     useEffect(() => {
-        console.log("useEffect for fetchVendorOrders triggered.");
         fetchVendorOrders();
-    }, [vendorId]); // Refetch when vendorId changes (though it's static here)
+    }, []); // Empty dependency array: runs only once on mount
 
     const handleStatusChange = async (orderId, itemId, newStatus) => {
-        // Prevent changing status if it's already Delivered or Cancelled (frontend validation)
         const orderToUpdate = orders.find(o => o._id === orderId);
         const itemToUpdate = orderToUpdate?.items.find(i => i._id === itemId);
 
         if (itemToUpdate && (itemToUpdate.status === 'Delivered' || itemToUpdate.status === 'Cancelled')) {
             alert(`Cannot change status for an item that is already ${itemToUpdate.status}.`);
-            return; // Prevent API call
+            return;
+        }
+
+        const vtoken = localStorage.getItem('vtoken'); // Get the vendor's token
+        if (!vtoken) {
+            alert('Authentication token missing. Please log in again.');
+            return;
         }
 
         try {
+            const headers = {
+                'Content-Type': 'application/json',
+                // Using 'vtoken' header as per your authVendor middleware
+                'vtoken': vtoken, 
+            };
+
             const response = await fetch(`http://localhost:4000/api/orders/${orderId}/items/${itemId}`, {
                 method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: headers,
                 body: JSON.stringify({ status: newStatus }),
             });
 
@@ -75,7 +89,7 @@ const VendorOrder = () => {
                 alert('Order item status updated successfully!');
                 fetchVendorOrders(); // Re-fetch orders to show updated status
             } else {
-                alert(`Failed to update status: ${data.message}`);
+                alert(`Failed to update status: ${data.message || 'Unknown error'}`);
             }
         } catch (error) {
             console.error('Error updating order item status:', error);
@@ -91,7 +105,6 @@ const VendorOrder = () => {
         return <div className="text-center p-4 text-red-600">Error: {error}</div>;
     }
 
-    // If no orders are found after loading (e.g., if you deleted the only one)
     if (orders.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center h-[60vh] text-center px-4">
@@ -114,14 +127,11 @@ const VendorOrder = () => {
                     <div key={order._id} className="border border-gray-200 rounded-lg shadow-sm p-4 bg-white">
                         <div className="flex justify-between items-center mb-3">
                             <p className="font-semibold text-lg">Order ID: {order._id}</p>
-                            {/* Safely access user name in case user is null/undefined after populate */}
                             <p className="text-sm text-gray-500">Placed by: {order.user?.name || 'Unknown User'}</p>
-                            {/* Use order.createdAt as per current OrderModel.js */}
                             <p className="text-sm text-gray-500">Placed on: {moment(order.createdAt).format('MMM D, h:mm A')}</p>
                         </div>
                         <p className="text-gray-700 mb-2">Total Order Amount: ₹{order.totalAmount.toFixed(2)}</p>
-                        {/* Now that backend saves address as object, direct access is expected to work */}
-                        <p className="text-gray-700 mb-2">Shipping Address: {order.address.line1}, {order.address.city} - {order.address.pincode}</p>
+                        <p className="text-gray-700 mb-2">Shipping Address: {order.address?.line1 || ''}, {order.address?.city || ''} - {order.address?.pincode || ''}</p>
                         <p className="text-gray-700 mb-4">Phone: {order.phone}</p>
 
                         <h3 className="font-medium mb-2">Your Items in this Order:</h3>
@@ -129,8 +139,7 @@ const VendorOrder = () => {
                             {order.items.map((item) => (
                                 <li key={item._id} className="flex items-center space-x-4 border-t pt-3">
                                     <img
-                                        // Safely access product image/name in case product is null/undefined after populate
-                                        src={item.product?.Image || 'https://via.placeholder.com/80'} // Fallback image
+                                        src={item.product?.Image || 'https://via.placeholder.com/80'}
                                         alt={item.product?.Name || 'Product'}
                                         className="w-20 h-20 object-cover rounded"
                                     />
@@ -145,9 +154,8 @@ const VendorOrder = () => {
                                                 className={`p-1 rounded border ${
                                                     item.status === 'Delivered' ? 'bg-green-100 text-green-800 border-green-300' :
                                                     item.status === 'Cancelled' ? 'bg-red-100 text-red-800 border-red-300' :
-                                                    'bg-yellow-100 text-yellow-800 border-yellow-300'
+                                                    'bg-yellow-100 text-yellow-800 border-yellow-800' // Corrected for yellow
                                                 }`}
-                                                // --- NEW: Disable dropdown if status is Delivered or Cancelled ---
                                                 disabled={item.status === 'Delivered' || item.status === 'Cancelled'}
                                             >
                                                 <option value="Pending">Pending</option>
