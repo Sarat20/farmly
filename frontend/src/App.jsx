@@ -17,7 +17,6 @@ import Cart from './pages/Cart';
 import Orders from './pages/Orders';
 import Product from './pages/Product';
 import ProductDetails from './pages/ProductDetails';
-import Transactions from './pages/Transactions';
 import Wishlist from './pages/Wishlist';
 import UserLogout from './pages/UserLogout';
 import Checkout from './pages/Checkout';
