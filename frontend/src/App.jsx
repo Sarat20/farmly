@@ -1,18 +1,17 @@
-// src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
- 
+
 import About from './components/About';
 import Contact from './components/Contact';
 
 import { UserProvider } from './context/UserContext';
 
 import Home from './pages/Home';
-import Login from './pages/Login';
-import Buyer from './pages/User';
+import Login from './pages/Login'; // Your existing Login component
+import Buyer from './pages/User'; // Renamed from Buyer to User for clarity if it's a layout
 import Cart from './pages/Cart';
 import Orders from './pages/Orders';
 import Product from './pages/Product';
@@ -30,8 +29,6 @@ import VendorProfile from './VendorPages/VendorProfile';
 import VendorLogout from './VendorPages/VendorLogout';
 import VendorSupport from './VendorPages/VendorSupport';
 
-
-
 import AddressManager from './pages/Address';
 import VendorOrder from './VendorPages/VendorOrder';
 import VendorPayment from './VendorPages/VendorPayment';
@@ -45,10 +42,11 @@ const App = () => {
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/user/login" element={<Login />} /> {/* NEW: Route for User Login */}
           <Route path="/about" element={<About />} />
           <Route path="/contact-us" element={<Contact />} />
 
-          {/* Buyer Routes */}
+          {/* Buyer/User Routes */}
           <Route path="/user" element={<Buyer />}>
             <Route path="products" element={<Product />} />
             <Route path="products/:id" element={<ProductDetails />} />
@@ -57,7 +55,6 @@ const App = () => {
             <Route path="wishlist" element={<Wishlist />} />
             <Route path="logout" element={<UserLogout />} />
             <Route path="checkout" element={<Checkout />} />
-
             <Route path="addresses" element={<AddressManager />} />
           </Route>
 
@@ -71,9 +68,9 @@ const App = () => {
             <Route path="add-product" element={<VendorAddProduct />} />
             <Route path="profile" element={<VendorProfile />} />
             <Route path="logout" element={<VendorLogout />} />
-            <Route path="orders" element={<VendorOrder/>}/>
+            <Route path="orders" element={<VendorOrder />} />
             <Route path="support" element={<VendorSupport />} />
-            <Route path="payments" element={<VendorPayment/>}/>
+            <Route path="payments" element={<VendorPayment />} />
           </Route>
         </Routes>
         <Footer />

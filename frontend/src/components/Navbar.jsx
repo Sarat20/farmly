@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import farmly_logo from '../assets/farmly_logo.png';
-// Removed FaShoppingCart, FaHeart as they are not used in this version
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -61,6 +60,11 @@ const Navbar = () => {
                     <NavLink to='/vendor/dashboard' className='text-base sm:text-lg hover:underline'>VendorHome</NavLink>
                 )}
 
+                {/* Show User Login if no one is logged in */}
+                {!isAuthenticated && (
+                    <NavLink to='/user/login' className='text-base sm:text-lg hover:underline'>User Login</NavLink> // Point to the new user login route
+                )}
+
                 {/* Show Vendor Login only if no one is logged in */}
                 {!isAuthenticated && (
                     <NavLink to='/vendor' className='text-base sm:text-lg hover:underline'>Vendor Login</NavLink>
@@ -74,15 +78,15 @@ const Navbar = () => {
                     <button
                         onClick={handleLogout}
                         className='px-3 py-1 sm:px-4 sm:py-2 text-white text-base sm:text-lg rounded-full
-                                   transition-transform duration-500 ease-in-out hover:scale-110 bg-red-600 hover:bg-red-700'
+                                        transition-transform duration-500 ease-in-out hover:scale-110 bg-red-600 hover:bg-red-700'
                     >
                         Logout
                     </button>
                 ) : (
                     <NavLink
-                        to='/login'
+                        to='/login' // This will take them to the general login/signup page as before
                         className='px-3 py-1 sm:px-4 sm:py-2 text-white text-base sm:text-lg rounded-full
-                                   transition-transform duration-500 ease-in-out hover:scale-110 bg-gray-800'
+                                        transition-transform duration-500 ease-in-out hover:scale-110 bg-gray-800'
                     >
                         Create Account
                     </NavLink>
