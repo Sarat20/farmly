@@ -1,32 +1,34 @@
-import express from 'express'
-import cors from 'cors'
-// import 'dotenv/config'
-import connectDb from './config/mongodb.js'
-import connectCloudinary from './config/cloudinary.js'
-
+import express from 'express';
+import cors from 'cors';
 import dotenv from 'dotenv';
-dotenv.config();
-   
+import connectDb from './config/mongodb.js';
+import connectCloudinary from './config/cloudinary.js';
 
-import userRouter from './routes/userRoute.js'
-import vendorRouter from './routes/vendorRoute.js'
+import userRouter from './routes/userRoute.js';
+import vendorRouter from './routes/vendorRoute.js';
 import productRouter from './routes/ProductRoute.js';
 import orderRouter from './routes/OrderRoute.js';
 
-const PORT=process.env.PORT || 4000
-const app=express()
+dotenv.config();
 
-   console.log("Environment Variables Loaded:", {
-       CLOUDINARY_NAME: process.env.CLOUDINARY_NAME,
-       CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
-       CLOUDINARY_API_SECRET: !!process.env.CLOUDINARY_API_SECRET ? '***' : 'NOT SET',
-   });
-   
+const PORT = process.env.PORT || 4000;
+const app = express();
+
+console.log("Environment Variables Loaded:", {
+    CLOUDINARY_NAME: process.env.CLOUDINARY_NAME,
+    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+    CLOUDINARY_API_SECRET: !!process.env.CLOUDINARY_API_SECRET ? '***' : 'NOT SET',
+});
 
 connectDb();
 connectCloudinary();
 
-app.listen(PORT,()=>console.log(`server is running on port ${PORT}`))
+
+const allowedOrigins = [
+    'http://localhost:5173', 
+    'https://farmly-frontend.onrender.com', 
+   
+];
 
 app.use(cors({
     origin: function (origin, callback) {
@@ -44,12 +46,13 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// apis for user
-app.use('/api/user',userRouter)
-//apis for vendor
-app.use('/api/vendor',vendorRouter)
-//apis for product
+// APIs for user
+app.use('/api/user', userRouter);
+// APIs for vendor
+app.use('/api/vendor', vendorRouter);
+// APIs for product
 app.use("/api/products", productRouter);
-//apis for order
-app.use('/api/orders/',orderRouter);
+// APIs for order
+app.use('/api/orders/', orderRouter);
 
+app.listen(PORT, () => console.log(`server is running on port ${PORT}`));
