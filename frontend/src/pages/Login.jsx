@@ -1,21 +1,20 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import homelogo from "../assets/homelogo.png";
+// src/pages/Vendorlogin.jsx
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
-  const [state, setState] = useState("SignUp");
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+const Vendorlogin = () => {
+  const [state, setState] = useState('Login');
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [consentDataUse, setConsentDataUse] = useState(false);
+  const [formData, setFormData] = useState({});
+  const [profilePhoto, setProfilePhoto] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-
+  const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
 
-  // Handle input change
+  const isFormValid = agreeTerms && consentDataUse;
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -24,139 +23,272 @@ const Login = () => {
     });
   };
 
-  // Handle form submit for registration or login
-  const handleSubmit = async (e) => {
+  const handlePhotoChange = (e) => {
+    setProfilePhoto(e.target.files[0]);
+  };
+
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setErrorMsg("");
-
-    const apiUrl =
-      state === "SignUp"
-        ? "http://localhost:4000/api/user/register"
-        : "http://localhost:4000/api/user/login";
-
+    setErrorMsg('');
     try {
-      const response = await axios.post(apiUrl, {
-        ...(state === "SignUp" && { name: formData.name }), // Include name only in SignUp
-        email: formData.email,
-        password: formData.password,
+      const { email, password } = formData;
+      const response = await axios.post('http://localhost:4000/api/vendor/login', {
+        Email: email,
+        Password: password,
       });
 
-      const { token } = response.data;
+      if (response.data.token) {
+        localStorage.setItem("vtoken", response.data.token);
+        localStorage.removeItem('token'); // Clear customer token if present
 
-      // Save token in localStorage or sessionStorage
-      localStorage.setItem("token", token);
+        // *** IMPORTANT: ADD THIS LINE BASED ON YOUR BACKEND RESPONSE ***
+        // Example if backend returns: { ..., "vendor": { "_id": "VENDOR_ID" } }
+        if (response.data.vendor && response.data.vendor._id) {
+            localStorage.setItem("vendorId", response.data.vendor._id);
+        }
+        // OR if backend returns: { ..., "vendorId": "VENDOR_ID" }
+        // if (response.data.vendorId) {
+        //     localStorage.setItem("vendorId", response.data.vendorId);
+        // }
 
-      alert(`${state === "SignUp" ? "Registration" : "Login"} successful!`);
 
-      // Redirect user after login/signup
-      navigate("/user/products"); // You can change this to /vendor/dashboard if it's vendor
+        alert('Login successful!');
+        navigate('/vendor/dashboard');
+      } else {
+        setErrorMsg('No token received. Please try again.');
+      }
 
-      // Reset form
-      setFormData({ name: "", email: "", password: "" });
+      setFormData({});
+      setAgreeTerms(false);
+      setConsentDataUse(false);
     } catch (error) {
-      setErrorMsg(
-        error.response?.data?.message || "An error occurred. Please try again."
-      );
+      setErrorMsg(error.response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg('');
+
+    try {
+      const form = new FormData();
+      form.append('Name', formData.name);
+      form.append('Email', formData.email);
+      form.append('Password', formData.password);
+      form.append('Mobilenumber', formData.phone);
+      form.append('Farmname', formData.farmName);
+      form.append('Village', formData.village);
+      form.append('District', formData.district);
+      form.append('State', formData.state);
+      form.append('Pincode', formData.pincode);
+      form.append('Deliveryarea', formData.deliveryAddress || '');
+      form.append('BankAccount', formData.accountNumber);
+      form.append('IFSC', formData.ifsc);
+      form.append('UPI', formData.upi || '');
+      form.append('PAN', formData.pan);
+      form.append('Aadhar', formData.aadhaar);
+
+      if (profilePhoto) {
+        form.append('ProfilePhoto', profilePhoto); // Must match 'req.file' field name
+      }
+
+      const response = await axios.post('http://localhost:4000/api/vendor/register', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      if (response.data.token) {
+        localStorage.setItem("vtoken", response.data.token);
+        localStorage.removeItem('token'); // Clear customer token if present
+
+        // *** IMPORTANT: ADD THIS LINE BASED ON YOUR BACKEND RESPONSE ***
+        // Example if backend returns: { ..., "vendor": { "_id": "VENDOR_ID" } }
+        if (response.data.vendor && response.data.vendor._id) {
+            localStorage.setItem("vendorId", response.data.vendor._id);
+        }
+        // OR if backend returns: { ..., "vendorId": "VENDOR_ID" }
+        // if (response.data.vendorId) {
+        //     localStorage.setItem("vendorId", response.data.vendorId);
+        // }
+
+        alert('Registration successful!');
+        navigate('/vendor/dashboard');
+      } else {
+        setErrorMsg('No token received. Please try again.');
+      }
+
+      setFormData({});
+      setProfilePhoto(null);
+      setAgreeTerms(false);
+      setConsentDataUse(false);
+    } catch (error) {
+      setErrorMsg(error.response?.data?.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const inputField = ({ name, label, type = 'text', placeholder }) => (
+    <div>
+      <label className="block mb-1 cursor-pointer">{label}</label>
+      <input
+        type={type}
+        name={name}
+        value={formData[name] || ''}
+        onChange={handleInputChange}
+        placeholder={placeholder}
+        className="w-full border border-black px-3 py-2 rounded outline-none"
+      />
+    </div>
+  );
+
   return (
-    <div className="flex flex-row space-x-10">
-      <img className="w-1/3 h-full " src={homelogo} alt="" />
+    <div className="flex items-center justify-center py-4 bg-white">
+      <div className={`border border-black rounded-xl p-8 w-full ${state === 'Login' ? 'max-w-sm' : 'max-w-3xl'}`}>
+        <h2 className="text-3xl font-bold text-center mb-6">
+          {state === 'SignUp' ? 'Farmer Registration' : 'Vendor Login'}
+        </h2>
 
-      <div className="flex flex-col items-center mt-8">
-        <p className="text-3xl font-bold mb-6">
-          {state === "SignUp" ? "SIGN UP" : "LOGIN"}
-        </p>
+        <div className="mb-6 text-center text-sm">
+          {state === 'Login' ? (
+            <p>
+              New vendor?{' '}
+              <span onClick={() => setState('SignUp')} className="text-green-600 underline cursor-pointer">
+                Register here
+              </span>
+            </p>
+          ) : (
+            <p>
+              Already have an account?{' '}
+              <span onClick={() => setState('Login')} className="text-blue-600 underline cursor-pointer">
+                Login here
+              </span>
+            </p>
+          )}
+        </div>
 
-        <div className="border-2 border-black px-8 py-6 rounded-lg w-96">
-          <form className="flex flex-col space-y-4" onSubmit={handleSubmit}>
-            {state === "SignUp" && (
-              <div>
-                <p className="text-lg mb-1">Enter Name</p>
+        {errorMsg && <p className="text-red-600 text-sm mb-4">{errorMsg}</p>}
+
+        {/* ---------- Login Form ---------- */}
+        {state === 'Login' && (
+          <form className="space-y-4" onSubmit={handleLoginSubmit}>
+            {inputField({ name: 'email', label: 'Email', type: 'email', placeholder: 'Enter Email' })}
+            {inputField({ name: 'password', label: 'Password', type: 'password', placeholder: 'Enter Password' })}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-green-600 text-white font-semibold py-2 rounded hover:bg-green-700 transition"
+            >
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
+          </form>
+        )}
+
+        {/* ---------- Registration Form ---------- */}
+        {state === 'SignUp' && (
+          <form className="space-y-6" onSubmit={handleRegisterSubmit}>
+            <div>
+              <h3 className="font-semibold mb-2">Personal Details</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {inputField({ name: 'name', label: 'Name', placeholder: 'Enter Name' })}
+                {inputField({ name: 'phone', label: 'Mobile Number', placeholder: 'Enter Phone Number' })}
+              </div>
+              <div className="mt-2">
+                <label className="block mb-1 cursor-pointer">Profile Photo (Optional)</label>
                 <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="border border-black px-3 py-1 w-full"
-                  placeholder="Enter your name"
-                  required
+                  type="file"
+                  name="profilePhoto"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  className="w-full border border-black px-3 py-2 rounded outline-none"
                 />
               </div>
-            )}
-
-            <div>
-              <p className="text-lg mb-1">Email</p>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="border border-black px-3 py-1 w-full"
-                placeholder="Enter your email"
-                required
-              />
             </div>
 
             <div>
-              <p className="text-lg mb-1">Password</p>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                className="border border-black px-3 py-1 w-full"
-                placeholder="Enter your password"
-                required
-              />
+              <h3 className="font-semibold mb-2">Farm & Address Info</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {inputField({ name: 'farmName', label: 'Farm Name', placeholder: 'Enter Farm Name' })}
+                {inputField({ name: 'village', label: 'Village', placeholder: 'Enter Village' })}
+                {inputField({ name: 'district', label: 'District', placeholder: 'Enter District' })}
+                {inputField({ name: 'state', label: 'State', placeholder: 'Enter State' })}
+                {inputField({ name: 'pincode', label: 'Pincode', placeholder: 'Enter Pincode' })}
+                <div className="md:col-span-2">
+                  <label className="block mb-1 cursor-pointer">Delivery Address (Optional)</label>
+                  <textarea
+                    name="deliveryAddress"
+                    value={formData.deliveryAddress || ''}
+                    onChange={handleInputChange}
+                    placeholder="Enter Address"
+                    className="w-full border border-black px-3 py-2 rounded outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-2">Bank Details</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {inputField({ name: 'accountNumber', label: 'Bank Account Number', type: 'number', placeholder: 'Enter Account Number' })}
+                {inputField({ name: 'ifsc', label: 'IFSC Code', placeholder: 'Enter IFSC' })}
+                {inputField({ name: 'upi', label: 'UPI ID (Optional)', placeholder: 'Enter UPI ID' })}
+                {inputField({ name: 'pan', label: 'PAN Card', placeholder: 'Enter PAN' })}
+                {inputField({ name: 'aadhaar', label: 'Aadhaar Number', placeholder: 'Enter Aadhaar' })}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-2">Login Credentials</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {inputField({ name: 'email', label: 'Email', type: 'email', placeholder: 'Enter Email' })}
+                {inputField({ name: 'password', label: 'Password', type: 'password', placeholder: 'Enter Password' })}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="flex items-start space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreeTerms}
+                  onChange={() => setAgreeTerms(!agreeTerms)}
+                  className="mt-1"
+                />
+                <span>
+                  I agree to the{' '}
+                  <a href="/terms" target="_blank" className="text-blue-600 underline">
+                    Terms and Conditions
+                  </a>{' '}
+                  of Farmly.
+                </span>
+              </label>
+              <label className="flex items-start space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={consentDataUse}
+                  onChange={() => setConsentDataUse(!consentDataUse)}
+                  className="mt-1"
+                />
+                <span>
+                  I consent to the use of my data by Farmly for platform operations, logistics, and service improvements.
+                </span>
+              </label>
             </div>
 
             <button
               type="submit"
-              className="bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-all"
-              disabled={loading}
+              disabled={!isFormValid || loading}
+              className={`w-full text-white font-semibold py-2 rounded transition ${isFormValid && !loading ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'}`}
             >
-              {loading
-                ? `${state === "SignUp" ? "Signing up..." : "Logging in..."}` 
-                : state === "SignUp" 
-                ? "SIGN UP" 
-                : "LOGIN"}
+              {loading ? 'Registering...' : 'Register'}
             </button>
           </form>
-
-          {errorMsg && <p className="text-red-600 text-sm mt-2">{errorMsg}</p>}
-
-          <div className="mt-4 text-center">
-            {state === "SignUp" ? (
-              <p className="text-sm">
-                Already have an account?{" "}
-                <span
-                  onClick={() => setState("Login")}
-                  className="text-blue-600 underline cursor-pointer"
-                >
-                  Login here
-                </span>
-              </p>
-            ) : (
-              <p className="text-sm">
-                Create a new account?{" "}
-                <span
-                  onClick={() => setState("SignUp")}
-                  className="text-blue-600 underline cursor-pointer"
-                >
-                  Click here
-                </span>
-              </p>
-            )}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default Login;
+export default Vendorlogin;

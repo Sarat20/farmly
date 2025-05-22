@@ -1,3 +1,4 @@
+// src/pages/Vendorlogin.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -39,8 +40,9 @@ const Vendorlogin = () => {
 
       if (response.data.token) {
         localStorage.setItem("vtoken", response.data.token);
+        localStorage.removeItem('token'); // <-- IMPORTANT: Clear customer token here
         alert('Login successful!');
-         navigate('/vendor/dashboard');
+        navigate('/vendor/dashboard');
       } else {
         setErrorMsg('No token received. Please try again.');
       }
@@ -88,6 +90,7 @@ const Vendorlogin = () => {
 
       if (response.data.token) {
         localStorage.setItem("vtoken", response.data.token);
+        localStorage.removeItem('token'); // <-- IMPORTANT: Clear customer token here
         alert('Registration successful!');
         navigate('/vendor/dashboard');
       } else {
