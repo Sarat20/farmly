@@ -1,6 +1,4 @@
-# Create a README.md file with the latest content provided by the user
 
-readme_content = """
 ## 📦 Farmly — Farm-to-Home E-commerce Platform
 
 Farmly is a full-stack web platform that connects local farm vendors with customers, enabling direct purchase of agricultural products. It supports real-time order tracking, multi-vendor product listings, and vendor-specific order management.
@@ -83,22 +81,3 @@ Farmly is a full-stack web platform that connects local farm vendors with custom
 
 ---
 
-## 🗂️ Project Structure
-
-farmly/
-├── backend/
-│ ├── config/ # DB & Cloudinary configs
-│ ├── controllers/ # Route logic (users, vendors, orders)
-│ ├── middlewares/ # Auth, multer for image uploads
-│ ├── models/ # Mongoose schemas
-│ ├── routes/ # Express routers
-│ └── server.js # Main server entry
-│
-├── frontend/
-│ ├── src/
-│ │ ├── components/ # Shared components (Navbar, Cards, etc.)
-│ │ ├── pages/ # Route-based page views
-│ │ ├── App.jsx # App wrapper
-│ │ └── main.jsx # ReactDOM entry point
-│
-└── .env # Environment variables
