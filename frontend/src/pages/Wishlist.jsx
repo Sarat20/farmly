@@ -28,17 +28,17 @@ const Wishlist = () => {
   }
 
   return (
-    <div className="p-4 max-w-3xl mx-auto">
-      <h2 className="text-2xl font-semibold mb-4">My Wishlist</h2>
+    <div className="p-4 max-w-4xl mx-auto w-full">
+      <h2 className="text-2xl font-semibold mb-4 text-center md:text-left">My Wishlist</h2>
       <ul className="space-y-4">
         {wishlist.map((product) => (
           <li
             key={product._id}
-            className="flex items-center border p-4 rounded-lg shadow-sm cursor-pointer hover:shadow-md transition"
+            className="flex flex-col md:flex-row items-center md:items-start border p-4 rounded-lg shadow-sm hover:shadow-md transition"
           >
             {/* Clickable product area */}
             <div
-              className="flex items-center flex-1"
+              className="flex flex-col md:flex-row items-center flex-1 w-full md:w-auto mb-4 md:mb-0"
               onClick={() => navigate(`/user/products/${product._id}`)}
               role="button"
               tabIndex={0}
@@ -49,9 +49,9 @@ const Wishlist = () => {
               <img
                 src={product.Image}
                 alt={product.Name}
-                className="w-24 h-24 object-cover rounded mr-4"
+                className="w-24 h-24 object-cover rounded mb-2 md:mb-0 md:mr-4"
               />
-              <div>
+              <div className="text-center md:text-left">
                 <h3 className="text-lg font-semibold">{product.Name}</h3>
                 <p className="text-gray-600">₹{product.Price}</p>
               </div>
@@ -60,7 +60,7 @@ const Wishlist = () => {
             {/* Remove from wishlist button */}
             <button
               onClick={() => removeFromWishlist(product._id)}
-              className="ml-4 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+              className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 w-full md:w-auto"
               aria-label={`Remove ${product.Name} from wishlist`}
               title="Remove from wishlist"
             >
