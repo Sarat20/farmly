@@ -30,7 +30,6 @@ const Product = () => {
         setSearchTerm(searchTermInput);
     };
 
-
     const filteredProducts = products
         .filter((product) =>
             product.Name.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -44,16 +43,16 @@ const Product = () => {
 
     return (
         <div className="p-4">
-            <h2 className="text-2xl font-semibold mb-4">All Products</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-center sm:text-left">All Products</h2>
 
-            <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4 mb-4 items-center">
+            <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4 mb-4 w-full">
                 <div className="relative w-full sm:w-1/2">
                     <input
                         type="text"
                         placeholder="Search by name..."
                         value={searchTermInput}
                         onChange={(e) => setSearchTermInput(e.target.value)}
-                        className="border p-2 pr-10 rounded w-full"
+                        className="border p-2 pr-10 rounded w-full text-sm"
                     />
                     <FaSearch
                         onClick={handleSearch}
@@ -64,7 +63,7 @@ const Product = () => {
                 <select
                     value={typeFilter}
                     onChange={(e) => setTypeFilter(e.target.value)}
-                    className="border p-2 rounded w-full sm:w-1/4"
+                    className="border p-2 rounded w-full sm:w-1/4 text-sm"
                 >
                     <option value="">All Types</option>
                     <option value="Fresh Produce">Fresh Produce</option>
@@ -76,31 +75,26 @@ const Product = () => {
                 <select
                     value={sortOption}
                     onChange={(e) => setSortOption(e.target.value)}
-                    className="border p-2 rounded w-full sm:w-1/4"
+                    className="border p-2 rounded w-full sm:w-1/4 text-sm"
                 >
                     <option value="">Sort By</option>
                     <option value="price-low">Price: Low to High</option>
                     <option value="price-high">Price: High to Low</option>
-                    {/* Removed rating-high sort option */}
                 </select>
             </form>
 
-            {/* Show current filter heading */}
             {typeFilter ? (
-                <h3 className="text-lg font-semibold mb-3">Showing: {typeFilter}</h3>
+                <h3 className="text-lg font-semibold mb-3 text-center sm:text-left">Showing: {typeFilter}</h3>
             ) : (
-                <h3 className="text-lg font-semibold mb-3">Showing: All Products</h3>
+                <h3 className="text-lg font-semibold mb-3 text-center sm:text-left">Showing: All Products</h3>
             )}
 
-            {/* Product Grid: 4 per row on md+ */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {filteredProducts.map((product) => (
                     <div
                         key={product._id}
                         className="relative border p-2 rounded-lg shadow-sm text-xs hover:shadow-md transition-shadow duration-200"
                     >
-                        {/* Removed Wish & Cart icons div */}
-
                         <Link to={`/user/products/${product._id}`}>
                             <img
                                 src={product.Image}
@@ -111,7 +105,6 @@ const Product = () => {
                             <p className="text-gray-600">{product.Type}</p>
                             <p className="text-gray-800 font-medium mt-1">₹{product.Price}</p>
                             <p className="text-gray-500">Qty: {product.Quantity}</p>
-                            {/* Removed rating display div */}
                             <p className="text-xs mt-2">Vendor: {product?.Vendor?.Name || 'Unknown'}</p>
                             <p className="text-xs">Farm: {product?.Vendor?.Farmname || 'Unknown'}</p>
                         </Link>
