@@ -29,4 +29,12 @@ const ProductSchema = new mongoose.Schema({
   CreatedAt: { type: Date, default: Date.now },
 });
 
+// Indexes for faster queries and sorts
+ProductSchema.index({ CreatedAt: -1 });
+ProductSchema.index({ Type: 1, CreatedAt: -1 });
+ProductSchema.index({ Price: 1 });
+ProductSchema.index({ Vendor: 1, CreatedAt: -1 });
+// Text index to support name/description search
+ProductSchema.index({ Name: "text", Description: "text" });
+
 export default mongoose.model("Product", ProductSchema);

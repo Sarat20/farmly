@@ -1,10 +1,9 @@
 import React from "react";
-
 const Footer = () => {
   return (
     <div className="flex flex-col">
      
-      {/* --this is footer top */}
+   
       <div className="bg-gray-700 text-white flex flex-row px-4 justify-between py-4">
         <div>
           <span className="text-2xl font-bold">Get to Know Us</span>
@@ -39,8 +38,7 @@ const Footer = () => {
 
       </div>
 
-      {/* this is about footer end */}
-
+     
       <div className="flex flex-col items-center bg-black text-white">
         <div className="flex flex-row space-x-7 mt-3">
 

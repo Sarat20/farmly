@@ -6,6 +6,4 @@ const userRouter=express.Router()
 userRouter.post('/login',loginUser);
 userRouter.post('/register',registerUser)
 
-
-
 export default userRouter

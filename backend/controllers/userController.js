@@ -4,9 +4,6 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import UserModel from '../models/UserModel.js';
 
-
-
-
 const loginUser=async(req,res)=>{
    try {
     

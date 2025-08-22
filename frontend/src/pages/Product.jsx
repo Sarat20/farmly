@@ -9,38 +9,44 @@ const Product = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [typeFilter, setTypeFilter] = useState('');
     const [sortOption, setSortOption] = useState('');
+    const [page, setPage] = useState(1);
+    const [pages, setPages] = useState(1);
+    const [limit] = useState(20);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchProducts = async () => {
+            setLoading(true);
             try {
-                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/all-products`);
+                const params = {
+                    page,
+                    limit,
+                    search: searchTerm || undefined,
+                    type: typeFilter || undefined,
+                    sort: sortOption === 'price-low' ? 'Price' : sortOption === 'price-high' ? '-Price' : '-CreatedAt',
+                };
+                const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/all-products`, { params });
                 if (res.data.success) {
                     setProducts(res.data.products);
+                    setPages(res.data.pages || 1);
                 }
             } catch (error) {
                 console.error('Failed to fetch products:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchProducts();
-    }, []);
+    }, [page, limit, searchTerm, typeFilter, sortOption]);
 
     const handleSearch = (e) => {
         e.preventDefault();
+        setPage(1);
         setSearchTerm(searchTermInput);
     };
 
-
-    const filteredProducts = products
-        .filter((product) =>
-            product.Name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-            (typeFilter === '' || product.Type === typeFilter)
-        )
-        .sort((a, b) => {
-            if (sortOption === 'price-low') return a.Price - b.Price;
-            if (sortOption === 'price-high') return b.Price - a.Price;
-            return 0;
-        });
+    const filteredProducts = products.slice();
 
     return (
         <div className="p-4">
@@ -63,7 +69,7 @@ const Product = () => {
 
                 <select
                     value={typeFilter}
-                    onChange={(e) => setTypeFilter(e.target.value)}
+                    onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
                     className="border p-2 rounded w-full sm:w-1/4"
                 >
                     <option value="">All Types</option>
@@ -75,7 +81,7 @@ const Product = () => {
 
                 <select
                     value={sortOption}
-                    onChange={(e) => setSortOption(e.target.value)}
+                    onChange={(e) => { setSortOption(e.target.value); setPage(1); }}
                     className="border p-2 rounded w-full sm:w-1/4"
                 >
                     <option value="">Sort By</option>
@@ -85,39 +91,59 @@ const Product = () => {
                 </select>
             </form>
 
-            {/* Show current filter heading */}
             {typeFilter ? (
                 <h3 className="text-lg font-semibold mb-3">Showing: {typeFilter}</h3>
             ) : (
                 <h3 className="text-lg font-semibold mb-3">Showing: All Products</h3>
             )}
 
-            {/* Product Grid: 4 per row on md+ */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                {filteredProducts.map((product) => (
-                    <div
-                        key={product._id}
-                        className="relative border p-2 rounded-lg shadow-sm text-xs hover:shadow-md transition-shadow duration-200"
-                    >
-                        {/* Removed Wish & Cart icons div */}
-
-                        <Link to={`/user/products/${product._id}`}>
-                            <img
-                                src={product.Image}
-                                alt={product.Name}
-                                className="h-32 w-full object-cover mb-2 rounded"
-                            />
-                            <h3 className="text-sm font-semibold">{product.Name}</h3>
-                            <p className="text-gray-600">{product.Type}</p>
-                            <p className="text-gray-800 font-medium mt-1">₹{product.Price}</p>
-                            <p className="text-gray-500">Qty: {product.Quantity}</p>
-                            {/* Removed rating display div */}
-                            <p className="text-xs mt-2">Vendor: {product?.Vendor?.Name || 'Unknown'}</p>
-                            <p className="text-xs">Farm: {product?.Vendor?.Farmname || 'Unknown'}</p>
-                        </Link>
+            {loading ? (
+                <div className="py-10 text-center text-gray-500">Loading...</div>
+            ) : (
+                <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        {filteredProducts.map((product) => (
+                            <div
+                                key={product._id}
+                                className="relative border p-2 rounded-lg shadow-sm text-xs hover:shadow-md transition-shadow duration-200"
+                            >
+                                <Link to={`/user/products/${product._id}`}>
+                                    <img
+                                        src={product.Image}
+                                        alt={product.Name}
+                                        className="h-32 w-full object-cover mb-2 rounded"
+                                    />
+                                    <h3 className="text-sm font-semibold">{product.Name}</h3>
+                                    <p className="text-gray-600">{product.Type}</p>
+                                    <p className="text-gray-800 font-medium mt-1">₹{product.Price}</p>
+                                    <p className="text-gray-500">Qty: {product.Quantity}</p>
+                                    <p className="text-xs mt-2">Vendor: {product?.Vendor?.Name || 'Unknown'}</p>
+                                    <p className="text-xs">Farm: {product?.Vendor?.Farmname || 'Unknown'}</p>
+                                </Link>
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
+
+                    {/* Pagination Controls */}
+                    <div className="flex items-center justify-center gap-2 mt-6">
+                        <button
+                            className="px-3 py-1 border rounded disabled:opacity-50"
+                            disabled={page <= 1}
+                            onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        >
+                            Prev
+                        </button>
+                        <span className="text-sm">Page {page} of {pages}</span>
+                        <button
+                            className="px-3 py-1 border rounded disabled:opacity-50"
+                            disabled={page >= pages}
+                            onClick={() => setPage((p) => Math.min(pages, p + 1))}
+                        >
+                            Next
+                        </button>
+                    </div>
+                </>
+            )}
         </div>
     );
 };

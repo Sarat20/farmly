@@ -1,10 +1,9 @@
-// backend/controllers/orderController.js
+
 
 import ProductModel from '../models/ProductModel.js';
 import OrderModel from '../models/OrderModel.js';
 import mongoose from 'mongoose';
 
-// Place order (no change from your provided code)
 const placeOrder = async (req, res) => {
     try {
         const { userId, items, address, phone, paymentMethod } = req.body;
@@ -24,7 +23,7 @@ const placeOrder = async (req, res) => {
 
                 return {
                     product: product._id,
-                    vendor: product.Vendor, // Ensure product.Vendor is the vendor's ObjectId stored correctly
+                    vendor: product.Vendor, 
                     quantity: item.quantity,
                     status: 'Pending',
                 };
@@ -54,7 +53,7 @@ const placeOrder = async (req, res) => {
     }
 };
 
-// Get orders for a specific user (no change from your provided code)
+
 const getUserOrders = async (req, res) => {
     try {
         const userId = req.params.userId;
@@ -74,32 +73,27 @@ const getUserOrders = async (req, res) => {
     }
 };
 
-
-// Get orders for a vendor (UPDATED)
 const getOrdersForVendor = async (req, res) => {
     try {
-        // Get the vendor ID from the token payload, attached by authVendor middleware to req.user
-        const vendorId = req.user.id; // <--- IMPORTANT CHANGE!
+       
+        const vendorId = req.user.id; 
 
         if (!vendorId) {
             return res.status(400).json({ success: false, message: 'Vendor ID not found in token payload after authentication.' });
         }
 
-        // Find orders where an item's 'vendor' field matches the authenticated vendor's ID
         const orders = await OrderModel.find({ 'items.vendor': vendorId })
-            .populate('user', 'name email') // Populate user name and email who placed the order
+            .populate('user', 'name email') 
             .populate({
-                path: 'items.product', // Populate product details for each item
-                select: 'Name Image Price QuantityUnit' // Select specific fields you need from product
+                path: 'items.product', 
+                select: 'Name Image Price QuantityUnit' 
             })
-            .sort({ createdAt: -1 }) // Sort by most recent orders first
-            .lean(); // Use .lean() for faster query if you don't need Mongoose document methods/virtuals
-
-        // Your existing filtering logic is good for ensuring only relevant items are returned:
+            .sort({ createdAt: -1 }) 
+            .lean(); 
         const filteredOrders = orders.map(order => ({
             ...order,
             items: order.items.filter(item => item.vendor && item.vendor.toString() === vendorId.toString())
-        })).filter(order => order.items.length > 0); // Filter out orders if they contain no items for this vendor
+        })).filter(order => order.items.length > 0); 
 
         res.json({ success: true, orders: filteredOrders });
     } catch (error) {
@@ -108,14 +102,12 @@ const getOrdersForVendor = async (req, res) => {
     }
 };
 
-// Update order item status (vendor only) - UPDATED
 const updateOrderItemStatus = async (req, res) => {
     try {
         const { orderId, itemId } = req.params;
         const { status } = req.body;
 
-        // Get the vendor ID from the token payload for authorization
-        const vendorIdFromToken = req.user.id; // <--- IMPORTANT CHANGE!
+        const vendorIdFromToken = req.user.id; 
 
         if (!vendorIdFromToken) {
             return res.status(400).json({ success: false, message: 'Vendor ID not found in token payload.' });
@@ -130,21 +122,18 @@ const updateOrderItemStatus = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Invalid status value.' });
         }
 
-        // Find the order AND ensure the specific item being updated belongs to the authenticated vendor
         const order = await OrderModel.findOne({ 
             _id: orderId, 
             'items._id': itemId,
-            'items.vendor': vendorIdFromToken // Crucial: ensure this item's vendor matches the token's vendor
+            'items.vendor': vendorIdFromToken 
         });
 
         if (!order) {
-            // If order or item isn't found, or the item doesn't belong to this vendor
             return res.status(404).json({ success: false, message: 'Order or item not found, or you do not have permission to update this item.' });
         }
 
-        const item = order.items.id(itemId); // Find the item within the order
+        const item = order.items.id(itemId); 
         if (!item) {
-            // This check might be redundant if the findOne query above already found it, but good for safety
             return res.status(404).json({ success: false, message: 'Order item not found in this order.' });
         }
 
@@ -158,11 +147,10 @@ const updateOrderItemStatus = async (req, res) => {
     }
 };
 
-// User cancels order item (no change from your provided code)
 const cancelOrderItem = async (req, res) => {
     try {
         const { orderId, itemId } = req.params;
-        const { userId } = req.body; // Ensure user is authorized to cancel their own item
+        const { userId } = req.body; 
 
         if (!userId) {
             return res.status(400).json({ success: false, message: 'User ID is required for cancellation.' });
@@ -173,7 +161,7 @@ const cancelOrderItem = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Order not found.' });
         }
 
-        // Security check: Ensure the order belongs to the requesting user
+        
         if (order.user.toString() !== userId) {
             return res.status(403).json({ success: false, message: 'Unauthorized: You can only cancel your own orders.' });
         }
@@ -183,7 +171,7 @@ const cancelOrderItem = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Order item not found in this order.' });
         }
 
-        // Check current status: Only allow cancellation if status is 'Pending' or 'Processing'
+       
         const cancellableStatuses = ['Pending', 'Processing'];
         if (!cancellableStatuses.includes(item.status)) {
             return res.status(400).json({ success: false, message: `Cannot cancel item with status: ${item.status}. Only Pending or Processing items can be cancelled.` });

@@ -1,11 +1,11 @@
-// frontend/src/pages/Login.jsx
+
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import homelogo from "../assets/homelogo.png"; // Keeping this if you use it for layout/visuals
+import homelogo from "../assets/homelogo.png"; 
 
 const Login = () => {
-    const [state, setState] = useState("SignUp"); // Default to SignUp for general "Create Account"
+    const [state, setState] = useState("SignUp"); 
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -28,8 +28,6 @@ const Login = () => {
         e.preventDefault();
         setLoading(true);
         setErrorMsg("");
-
-        // API endpoint for User Registration or Login
         const apiUrl =
             state === "SignUp"
                 ? `${import.meta.env.VITE_BACKEND_URL}/api/user/register`
@@ -37,28 +35,24 @@ const Login = () => {
 
         try {
             const response = await axios.post(apiUrl, {
-                ...(state === "SignUp" && { name: formData.name }), // Include name only for SignUp
+                ...(state === "SignUp" && { name: formData.name }), 
                 email: formData.email,
                 password: formData.password,
             });
 
-            const { token, user } = response.data; // Assuming your backend sends 'user' data with '_id'
-
-            // Save user token in localStorage
+            const { token, user } = response.data;
             localStorage.setItem("token", token);
-            // Clear vendor token just in case
+            
             localStorage.removeItem('vtoken');
 
             if (user && user._id) {
-                localStorage.setItem("userId", user._id); // Store user ID
+                localStorage.setItem("userId", user._id); 
             }
 
             alert(`${state === "SignUp" ? "Registration" : "Login"} successful!`);
 
-            // Redirect user after login/signup
-            navigate("/user/products"); // Navigate to the user's main section
+            navigate("/user/products"); 
 
-            // Reset form
             setFormData({ name: "", email: "", password: "" });
         } catch (error) {
             setErrorMsg(
@@ -71,7 +65,7 @@ const Login = () => {
 
     return (
         <div className="flex flex-row space-x-10">
-            {/* If homelogo is meant for the general login/signup page */}
+          
             <img className="w-1/3 h-full " src={homelogo} alt="" />
 
             <div className="flex flex-col items-center mt-8">

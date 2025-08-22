@@ -17,40 +17,35 @@ const Navbar = () => {
         };
 
         checkTokens();
-    }, [location]); // Re-run effect when the URL changes
+    }, [location]); 
 
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('vtoken');
         setUserToken(null);
         setVendorToken(null);
-        navigate('/'); // Redirect to the default home page
+        navigate('/'); 
     };
 
-    // Determine authentication status and role
     const isAuthenticated = userToken || vendorToken;
     const userRole = userToken ? 'customer' : (vendorToken ? 'vendor' : null);
 
-    // Determine the 'Home' link destination
     let homeLinkTo = '/';
     if (userToken) {
-        homeLinkTo = '/user/products'; // Customer's home
+        homeLinkTo = '/user/products'; 
     } else if (vendorToken) {
-        homeLinkTo = '/vendor/dashboard'; // Vendor's home
+        homeLinkTo = '/vendor/dashboard';
     }
 
     return (
         <div className='bg-green-500 py-5 flex items-center justify-between text-white px-4 sm:px-10'>
-            {/* Logo and Welcome Text */}
             <div className='flex items-center space-x-2 sm:space-x-4'>
                 <img src={farmly_logo} className='w-10 h-10 sm:w-12 sm:h-12 rounded-full' alt="farmly_logo" />
                 <div className='text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold'>Welcome To Farmly</div>
             </div>
 
-            {/* Navigation Links */}
             <div className='flex items-center space-x-4 sm:space-x-8'>
 
-                {/* Conditional Home Links */}
                 {!isAuthenticated && (
                     <NavLink to='/' className='text-base sm:text-lg hover:underline'>Home</NavLink>
                 )}
@@ -61,12 +56,10 @@ const Navbar = () => {
                     <NavLink to='/vendor/dashboard' className='text-base sm:text-lg hover:underline'>VendorHome</NavLink>
                 )}
 
-                {/* Show User Login if no one is logged in */}
                 {!isAuthenticated && (
                     <NavLink to='/user/login' className='text-base sm:text-lg hover:underline'>User Login</NavLink>
                 )}
 
-                {/* Show Vendor Login only if no one is logged in */}
                 {!isAuthenticated && (
                     <NavLink to='/vendor' className='text-base sm:text-lg hover:underline'>Vendor Login</NavLink>
                 )}
@@ -74,7 +67,6 @@ const Navbar = () => {
                 <NavLink to='/about' className='text-base sm:text-lg hover:underline'>About</NavLink>
                 <NavLink to='/contact-us' className='text-base sm:text-lg hover:underline'>Contact Us</NavLink>
 
-                {/* Conditional Login/Create Account or Logout Button */}
                 {isAuthenticated ? (
                     <button
                         onClick={handleLogout}
@@ -85,7 +77,7 @@ const Navbar = () => {
                     </button>
                 ) : (
                     <NavLink
-                        to='/login' // This will take them to the general user login/signup page
+                        to='/login' 
                         className='px-3 py-1 sm:px-4 sm:py-2 text-white text-base sm:text-lg rounded-full
                                         transition-transform duration-500 ease-in-out hover:scale-110 bg-gray-800'
                     >

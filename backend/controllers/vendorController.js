@@ -1,10 +1,9 @@
-// backend/controllers/vendorController.js
 
 import VendorModel from "../models/VendorModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import ProductModel from "../models/ProductModel.js";
-import OrderModel from '../models/OrderModel.js'; // Import OrderModel
+import OrderModel from '../models/OrderModel.js'; 
 import { v2 as cloudinary } from "cloudinary";
 import path from 'path';
 
@@ -64,7 +63,7 @@ const vendorRegister = async (req, res) => {
             return res.status(400).json({ success: false, message: "Vendor already exists" });
         }
 
-        // Upload profile photo if provided
+       
         let profilePhotoUrl = "";
         if (req.file) {
             const imagePath = path.resolve(req.file.path);
@@ -118,8 +117,8 @@ const AddProduct = async (req, res) => {
             return res.status(400).json({ success: false, message: "Image is required" });
         }
 
-        // Validate QuantityUnit (optional but recommended)
-        const validUnits = ["kgs", "items", "liters", "units"]; // Added more common units
+       
+        const validUnits = ["kgs", "items", "liters", "units"]; 
         if (!QuantityUnit || !validUnits.includes(QuantityUnit)) {
             return res.status(400).json({ success: false, message: "Invalid or missing QuantityUnit" });
         }
@@ -162,7 +161,7 @@ const AddProduct = async (req, res) => {
 
 const getVendorProducts = async (req, res) => {
     try {
-        const vendorId = req.user.id; // From authVendor middleware
+        const vendorId = req.user.id; 
 
         const products = await ProductModel.find({ Vendor: vendorId }).sort({ CreatedAt: -1 });
 
@@ -237,33 +236,30 @@ const updateVendorProfile = async (req, res) => {
     }
 };
 
-// NEW: getVendorPayments function
 const getVendorPayments = async (req, res) => {
     try {
-        const vendorId = req.user.id; // Get vendor ID from authVendor middleware
+        const vendorId = req.user.id; 
 
         if (!vendorId) {
             return res.status(400).json({ success: false, message: 'Vendor ID is required.' });
         }
 
-        // Find all orders that contain items from this vendor
         const orders = await OrderModel.find({ 'items.vendor': vendorId })
-            .populate('items.product', 'Name Price') // Populate product details for item calculations
-            .lean(); // Use .lean() for faster query as we don't need Mongoose documents
+            .populate('items.product', 'Name Price') 
+            .lean(); 
 
         let totalEarnings = 0;
-        let availableForPayout = 0; // Simplified: assume all delivered sales are available
-        let pendingEarnings = 0;    // Simplified: sales in 'Pending', 'Processing', 'Shipped'
+        let availableForPayout = 0; 
+        let pendingEarnings = 0;    
         let lastPayoutDate = null;
         let lastPayoutAmount = 0;
 
-        const salesTransactions = []; // To build a transaction history
+        const salesTransactions = []; 
+        
 
         for (const order of orders) {
             for (const item of order.items) {
-                // Ensure the item belongs to this specific vendor
                 if (item.vendor.toString() === vendorId) {
-                    // Check if product details were populated
                     if (item.product && item.product.Price) {
                         const itemRevenue = item.product.Price * item.quantity;
                         totalEarnings += itemRevenue;
@@ -283,7 +279,6 @@ const getVendorPayments = async (req, res) => {
                         } else if (item.status === 'Pending' || item.status === 'Processing' || item.status === 'Shipped') {
                             pendingEarnings += itemRevenue;
                         }
-                        // Cancelled items don't add to earnings
                     } else {
                         console.warn(`Product details not found for item ${item._id} in order ${order._id}. Skipping revenue calculation for this item.`);
                     }
@@ -291,31 +286,15 @@ const getVendorPayments = async (req, res) => {
             }
         }
 
-        // Mock Payout Info (you would replace this with actual payout records from a Payout model or payment gateway)
-        // For demonstration, let's assume 'lastPayout' is a separate record or a calculated value.
-        // If you had a Payouts collection in your DB:
-        // const latestPayout = await PayoutModel.findOne({ vendor: vendorId }).sort({ createdAt: -1 });
-        // if (latestPayout) {
-        //     lastPayoutDate = latestPayout.createdAt;
-        //     lastPayoutAmount = latestPayout.amount;
-        // } else {
-        //     lastPayoutDate = null; // Or some default
-        //     lastPayoutAmount = 0;
-        // }
-        // For now, let's just use a hardcoded value or derive it from past sales for demo.
-        // A real system would track actual payouts.
-        lastPayoutDate = new Date(); // Placeholder
-        lastPayoutAmount = 0; // Placeholder
-
-        // You might consider deducting a platform commission here if applicable
+        lastPayoutDate = new Date(); 
+        lastPayoutAmount = 0;  
 
         const bankAccount = {
-            name: (await VendorModel.findById(vendorId).select('BankAccount')).BankAccount, // Fetch BankAccount name from VendorModel
-            last4: '****' + (await VendorModel.findById(vendorId).select('BankAccount')).BankAccount.slice(-4), // Example for last 4 digits
-            bankName: 'Your Bank Name', // You might need a BankName field in VendorModel
+            name: (await VendorModel.findById(vendorId).select('BankAccount')).BankAccount, 
+            last4: '****' + (await VendorModel.findById(vendorId).select('BankAccount')).BankAccount.slice(-4), 
+            bankName: 'Your Bank Name', 
         };
         const payoutSchedule = 'Automatic weekly payouts every Monday if balance exceeds ₹1000.';
-
 
         res.json({
             success: true,
@@ -342,20 +321,14 @@ const getVendorPayments = async (req, res) => {
     }
 };
 
-// <--- ADD THIS NEW FUNCTION HERE --->
 const getVendorOrderCount = async (req, res) => {
     try {
-        const vendorId = req.user.id; // Assuming req.user.id is set by your authentication middleware
+        const vendorId = req.user.id; 
 
         if (!vendorId) {
             return res.status(400).json({ success: false, message: 'Vendor ID is required to count orders.' });
         }
-
-        // --- IMPORTANT: Adjust this query based on your OrderModel structure ---
-        // Option 1: If your OrderModel has a direct 'vendor' field for the whole order
-        // const totalOrders = await OrderModel.countDocuments({ vendor: vendorId });
-
-        // Option 2 (more likely): If your OrderModel has an 'items' array, and each item has a 'vendor' field
+        
         const totalOrders = await OrderModel.countDocuments({ 'items.vendor': vendorId });
 
         res.status(200).json({ success: true, totalOrders });
@@ -374,5 +347,5 @@ export {
     getVendorProfile,
     updateVendorProfile,
     getVendorPayments,
-    getVendorOrderCount // <--- AND EXPORT IT HERE
+    getVendorOrderCount 
 };

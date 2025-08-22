@@ -41,13 +41,10 @@ const App = () => {
       <Router>
         <Navbar />
         <Routes>
-          {/* Public Routes */}
           <Route path="/" element={<Home />} />
 
-          {/* Routes that use your combined User Login/Signup component */}
-          <Route path="/login" element={<Login />} />          {/* For general 'Create Account' link */}
-          <Route path="/user/login" element={<Login />} />    {/* For explicit 'User Login' link */}
-          {/* Add a user registration route if needed, e.g., <Route path="/user/register" element={<Login />} /> */}
+          <Route path="/login" element={<Login />} />        
+          <Route path="/user/login" element={<Login />} />   
 
           <Route path="/about" element={<About />} />
           <Route path="/contact-us" element={<Contact />} />
