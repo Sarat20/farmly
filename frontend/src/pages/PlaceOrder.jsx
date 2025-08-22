@@ -46,33 +46,33 @@ const PlaceOrder = () => {
   };
 
   return (
-    <div className="p-4 max-w-3xl mx-auto">
-      <h2 className="text-2xl font-semibold mb-4">Place Order</h2>
+    <div className="p-4 max-w-3xl mx-auto w-full">
+      <h2 className="text-2xl font-semibold mb-4 text-center sm:text-left">Place Order</h2>
 
       <div className="mb-4">
-        <label className="block mb-1 font-medium">Phone Number</label>
+        <label className="block mb-1 font-medium text-sm sm:text-base">Phone Number</label>
         <input
           type="tel"
           placeholder="Enter phone number"
           value={phoneNumber}
           onChange={(e) => setPhoneNumber(e.target.value)}
-          className="border px-4 py-2 rounded w-full"
+          className="border px-4 py-2 rounded w-full text-sm sm:text-base"
         />
       </div>
 
       <div className="mb-4">
-        <h3 className="text-lg font-medium">Select Delivery Address</h3>
+        <h3 className="text-lg font-medium text-sm sm:text-base">Select Delivery Address</h3>
         <ul className="space-y-2 mt-2">
           {addresses.map((address, index) => (
             <li key={index}>
-              <label className="flex items-center space-x-2">
+              <label className="flex items-start sm:items-center space-x-2 text-sm sm:text-base">
                 <input
                   type="radio"
                   name="address"
                   value={address}
                   onChange={() => setSelectedAddress(address)}
                 />
-                <span>{address}</span>
+                <span className="break-words">{address}</span>
               </label>
             </li>
           ))}
@@ -80,11 +80,11 @@ const PlaceOrder = () => {
       </div>
 
       <div className="mb-4">
-        <label className="block mb-1 font-medium">Payment Type</label>
+        <label className="block mb-1 font-medium text-sm sm:text-base">Payment Type</label>
         <select
           value={paymentType}
           onChange={(e) => setPaymentType(e.target.value)}
-          className="border px-4 py-2 rounded w-full"
+          className="border px-4 py-2 rounded w-full text-sm sm:text-base"
         >
           <option value="COD">Cash on Delivery</option>
           <option value="Online">Online Payment</option>
@@ -92,11 +92,11 @@ const PlaceOrder = () => {
       </div>
 
       <div className="mb-4">
-        <label className="block mb-1 font-medium">Delivery Method</label>
+        <label className="block mb-1 font-medium text-sm sm:text-base">Delivery Method</label>
         <select
           value={deliveryMethod}
           onChange={(e) => setDeliveryMethod(e.target.value)}
-          className="border px-4 py-2 rounded w-full"
+          className="border px-4 py-2 rounded w-full text-sm sm:text-base"
         >
           <option value="Standard">Standard Delivery</option>
           <option value="Express">Express Delivery</option>
@@ -104,7 +104,7 @@ const PlaceOrder = () => {
       </div>
 
       <button
-        className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 w-full sm:w-auto text-sm sm:text-base"
         onClick={handleOrder}
       >
         Confirm & Place Order

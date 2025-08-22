@@ -11,7 +11,6 @@ const Checkout = () => {
     const [paymentMethod, setPaymentMethod] = useState('COD');
     const navigate = useNavigate();
 
-
     useEffect(() => {
         setAddresses(contextAddresses);
     }, [contextAddresses]);
@@ -49,11 +48,11 @@ const Checkout = () => {
         const orderAddress = addresses[selectedAddressIndex];
 
         const orderData = {
-            userId: userId, 
+            userId: userId,
             items: cart.map((item) => ({
                 productId: item._id,
                 quantity: item.quantity,
-                Price: item.Price, 
+                Price: item.Price,
             })),
             address: orderAddress,
             phone,
@@ -73,8 +72,8 @@ const Checkout = () => {
 
             if (data.success) {
                 alert('Order Placed Successfully!');
-                clearCart(); 
-                navigate('/user/orders'); 
+                clearCart();
+                navigate('/user/orders');
             } else {
                 alert(`Order placement failed: ${data.message}`);
             }
@@ -89,17 +88,17 @@ const Checkout = () => {
     };
 
     return (
-        <div className="p-4 max-w-lg mx-auto">
-            <h2 className="text-xl font-bold mb-4">Checkout</h2>
+        <div className="p-4 max-w-lg mx-auto w-full">
+            <h2 className="text-xl font-bold mb-4 text-center sm:text-left">Checkout</h2>
 
             <h3 className="font-semibold mb-2">Cart Summary</h3>
-            <ul className="mb-4 border p-3 rounded">
+            <ul className="mb-4 border p-3 rounded text-sm sm:text-base">
                 {cart.length === 0 ? (
                     <p>Your cart is empty.</p>
                 ) : (
                     cart.map((item) => (
-                        <li key={item._id} className="flex justify-between items-center mb-1">
-                            <span>{item.Name} x {item.quantity}</span>
+                        <li key={item._id} className="flex justify-between items-center mb-1 flex-wrap">
+                            <span className="w-full sm:w-auto">{item.Name} x {item.quantity}</span>
                             <span>₹{(item.Price * item.quantity).toFixed(2)}</span>
                         </li>
                     ))
@@ -112,11 +111,11 @@ const Checkout = () => {
 
             <h3 className="font-semibold mb-2">Select Address</h3>
             {addresses.length === 0 && <p className="mb-4">No saved addresses. Please add one below.</p>}
-            <ul className="mb-4">
+            <ul className="mb-4 space-y-2">
                 {addresses.map((addr, i) => (
                     <li
                         key={i}
-                        className="mb-2 flex items-center justify-between border p-2 rounded"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between border p-2 rounded gap-2"
                     >
                         <label className="flex items-center space-x-2 cursor-pointer">
                             <input
@@ -126,11 +125,11 @@ const Checkout = () => {
                                 onChange={() => setSelectedAddressIndex(i)}
                                 className="mr-2"
                             />
-                            <span>{`${addr.line1}, ${addr.city} - ${addr.pincode}`}</span>
+                            <span className="text-sm sm:text-base">{`${addr.line1}, ${addr.city} - ${addr.pincode}`}</span>
                         </label>
                         <button
                             onClick={() => handleDeleteAddress(i)}
-                            className="text-red-600 hover:text-red-800"
+                            className="text-red-600 hover:text-red-800 text-sm"
                             title="Delete address"
                             aria-label="Delete address"
                         >
@@ -146,25 +145,25 @@ const Checkout = () => {
                 placeholder="Address line 1"
                 value={newAddress.line1}
                 onChange={(e) => setNewAddress({ ...newAddress, line1: e.target.value })}
-                className="w-full border p-2 mb-2"
+                className="w-full border p-2 mb-2 text-sm sm:text-base"
             />
             <input
                 type="text"
                 placeholder="City"
                 value={newAddress.city}
                 onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
-                className="w-full border p-2 mb-2"
+                className="w-full border p-2 mb-2 text-sm sm:text-base"
             />
             <input
                 type="text"
                 placeholder="Pincode"
                 value={newAddress.pincode}
                 onChange={(e) => setNewAddress({ ...newAddress, pincode: e.target.value })}
-                className="w-full border p-2 mb-4"
+                className="w-full border p-2 mb-4 text-sm sm:text-base"
             />
             <button
                 onClick={handleAddAddress}
-                className="bg-blue-600 text-white px-4 py-2 rounded mb-6"
+                className="bg-blue-600 text-white px-4 py-2 rounded mb-6 w-full sm:w-auto"
             >
                 Add Address
             </button>
@@ -174,12 +173,12 @@ const Checkout = () => {
                 placeholder="Phone Number"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full border p-2 mb-2"
+                className="w-full border p-2 mb-2 text-sm sm:text-base"
             />
             <select
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
-                className="w-full border p-2 mb-4"
+                className="w-full border p-2 mb-4 text-sm sm:text-base"
             >
                 <option value="COD">Cash on Delivery</option>
                 <option value="UPI">UPI</option>
@@ -187,7 +186,7 @@ const Checkout = () => {
             </select>
             <button
                 onClick={handlePlaceOrder}
-                className="bg-green-600 text-white px-4 py-2 rounded"
+                className="bg-green-600 text-white px-4 py-2 rounded w-full sm:w-auto"
             >
                 Confirm Order
             </button>

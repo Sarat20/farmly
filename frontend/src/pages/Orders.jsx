@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react'; // Import useCallback
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { UserContext } from '../context/UserContext';
 import moment from 'moment';
 
@@ -8,7 +8,6 @@ const UserOrders = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-   
     const fetchOrders = useCallback(async () => {
         if (!userId) {
             setError('User not logged in or user ID not available.');
@@ -38,7 +37,7 @@ const UserOrders = () => {
 
     useEffect(() => {
         fetchOrders();
-    }, [fetchOrders]); 
+    }, [fetchOrders]);
 
     const handleCancelOrderItem = async (orderId, itemId) => {
         if (!window.confirm('Are you sure you want to cancel this item?')) {
@@ -51,14 +50,14 @@ const UserOrders = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ userId: userId }), 
+                body: JSON.stringify({ userId: userId }),
             });
 
             const data = await response.json();
 
             if (data.success) {
                 alert('Order item cancelled successfully!');
-                fetchOrders(); 
+                fetchOrders();
             } else {
                 alert(`Cancellation failed: ${data.message}`);
             }
@@ -95,37 +94,49 @@ const UserOrders = () => {
 
     return (
         <div className="p-4 max-w-4xl mx-auto">
-            <h2 className="text-2xl font-semibold mb-4">Your Orders</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-center sm:text-left">Your Orders</h2>
             <div className="space-y-6">
                 {orders.map((order) => (
                     <div key={order._id} className="border border-gray-200 rounded-lg shadow-sm p-4 bg-white">
-                        <div className="flex justify-between items-center mb-3">
-                            <p className="font-semibold text-lg">Order ID: {order._id}</p>
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-3 space-y-2 sm:space-y-0">
+                            <p className="font-semibold text-lg break-words">Order ID: {order._id}</p>
                             <p className="text-sm text-gray-500">Placed on: {moment(order.createdAt).format('MMM D, h:mm A')}</p>
                         </div>
-                        <p className="text-gray-700 mb-2">Total Amount: ₹{order.totalAmount.toFixed(2)}</p>
-                        <p className="text-gray-700 mb-2">
+                        <p className="text-gray-700 mb-2 break-words">Total Amount: ₹{order.totalAmount.toFixed(2)}</p>
+                        <p className="text-gray-700 mb-2 break-words">
                             Shipping Address: {order.address.line1}, {order.address.city} - {order.address.pincode}
                         </p>
-                        <p className="text-gray-700 mb-4">Phone: {order.phone}</p>
+                        <p className="text-gray-700 mb-4 break-words">Phone: {order.phone}</p>
 
                         <h3 className="font-medium mb-2">Items:</h3>
                         <ul className="space-y-2">
                             {order.items.map((item) => (
-                                <li key={item._id} className="flex items-center space-x-4 border-t pt-2">
+                                <li
+                                    key={item._id}
+                                    className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 border-t pt-2"
+                                >
                                     <img
                                         src={item.product?.Image || 'https://via.placeholder.com/64'}
                                         alt={item.product?.Name || 'Product'}
-                                        className="w-16 h-16 object-cover rounded"
+                                        className="w-16 h-16 object-cover rounded mb-2 sm:mb-0"
                                     />
                                     <div className="flex-1">
                                         <p className="font-medium">{item.product?.Name || 'Unknown Product'}</p>
                                         <p className="text-gray-600">Quantity: {item.quantity}</p>
-                                        <p className="text-gray-600">Status: <span className={`font-semibold ${
-                                            item.status === 'Delivered' ? 'text-green-600' :
-                                            item.status === 'Cancelled' ? 'text-red-600' :
-                                            'text-yellow-600'
-                                        }`}>{item.status}</span></p>
+                                        <p className="text-gray-600">
+                                            Status:{' '}
+                                            <span
+                                                className={`font-semibold ${
+                                                    item.status === 'Delivered'
+                                                        ? 'text-green-600'
+                                                        : item.status === 'Cancelled'
+                                                        ? 'text-red-600'
+                                                        : 'text-yellow-600'
+                                                }`}
+                                            >
+                                                {item.status}
+                                            </span>
+                                        </p>
 
                                         {(item.status === 'Pending' || item.status === 'Processing') && (
                                             <button

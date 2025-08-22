@@ -20,16 +20,16 @@ const UserSideBar = () => {
   ];
 
   return (
-    <div className="w-full bg-green-100 px-6 py-4 flex items-center overflow-x-auto">
-      {/* Keeping Buyer Panel to the left */}
-      <h2 className="text-xl font-bold whitespace-nowrap mr-10 ml-10">Buyer Panel</h2>
+    <div className="w-full bg-green-100 px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-0 sm:justify-between overflow-x-auto">
+      {/* Buyer Panel Title */}
+      <h2 className="text-xl font-bold whitespace-nowrap ml-2 sm:ml-10">Buyer Panel</h2>
 
-      {/* This div now takes remaining space and centers its children */}
-      <div className="flex flex-1 justify-center gap-8 flex-wrap">
+      {/* Navigation Menu */}
+      <div className="flex flex-wrap justify-center sm:justify-center gap-4 sm:gap-8">
         {menuItems.map((item, index) => (
           <div
             key={index}
-            className="flex items-center gap-5 px-6 py-2 hover:bg-green-200 rounded-lg cursor-pointer transition-all duration-200"
+            className="flex items-center gap-3 px-4 py-2 hover:bg-green-200 rounded-lg cursor-pointer transition-all duration-200"
             onClick={() => navigate(item.path)}
           >
             <span className="text-lg">{item.icon}</span>

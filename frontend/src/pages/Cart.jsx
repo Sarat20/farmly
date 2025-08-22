@@ -1,4 +1,3 @@
-
 import React, { useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
@@ -40,20 +39,20 @@ const Cart = () => {
     }
 
     return (
-        <div className="p-4 max-w-3xl mx-auto">
-            <h2 className="text-2xl font-semibold mb-4">My Cart</h2>
+        <div className="p-4 max-w-3xl mx-auto w-full">
+            <h2 className="text-2xl font-semibold mb-4 text-center sm:text-left">My Cart</h2>
             <ul className="space-y-4">
                 {cart.map((product) => (
                     <li
                         key={product._id}
-                        className="flex items-center border p-4 rounded-lg shadow-sm"
+                        className="flex flex-col sm:flex-row sm:items-center border p-4 rounded-lg shadow-sm gap-4"
                     >
                         <img
                             src={product.Image}
                             alt={product.Name}
-                            className="w-24 h-24 object-cover rounded mr-4"
+                            className="w-full sm:w-24 sm:h-24 h-48 object-cover rounded"
                         />
-                        <div className="flex-1">
+                        <div className="flex-1 w-full">
                             <h3 className="text-lg font-semibold">{product.Name}</h3>
                             <p className="text-gray-600">₹{product.Price}</p>
                             <div className="flex items-center mt-2 space-x-2">
@@ -74,7 +73,7 @@ const Cart = () => {
                         </div>
                         <button
                             onClick={() => removeFromCart(product._id)}
-                            className="text-red-500 hover:text-red-700 transition ml-4"
+                            className="text-red-500 hover:text-red-700 transition self-start sm:self-center"
                             aria-label="Remove from cart"
                         >
                             <FaTrash />
@@ -83,11 +82,11 @@ const Cart = () => {
                 ))}
             </ul>
 
-            <div className="mt-6 text-right">
+            <div className="mt-6 text-center sm:text-right">
                 <p className="text-xl font-semibold mb-4">Total: ₹{totalPrice}</p>
                 <button
                     onClick={() => navigate('/user/checkout')}
-                    className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition"
+                    className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition w-full sm:w-auto"
                 >
                     Proceed to Checkout
                 </button>
