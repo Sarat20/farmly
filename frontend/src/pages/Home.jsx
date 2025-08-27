@@ -8,11 +8,11 @@ const Home = () => {
         <div className='bg-white'>
             <div className='grid grid-cols-1 md:grid-cols-2 items-stretch'>
                 {/* Full-bleed image column */}
-                <div className='w-full h-[40vh] md:h-[70vh]'>
+                <div className='w-full h-[40vh] md:h-[80vh] lg:h-[85vh]'>
                     <img
                         src={homelogo}
                         alt="Farmly"
-                        className='w-full h-full object-cover'
+                        className='w-full h-full object-cover object-top'
                         loading="lazy"
                     />
                 </div>
