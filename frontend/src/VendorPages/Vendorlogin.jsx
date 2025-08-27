@@ -109,159 +109,161 @@ const Vendorlogin = () => {
 
   const inputField = ({ name, label, type = 'text', placeholder }) => (
     <div>
-      <label className="block mb-1 cursor-pointer">{label}</label>
+      <label className="block mb-1 text-sm font-medium text-gray-700 cursor-pointer">{label}</label>
       <input
         type={type}
         name={name}
         value={formData[name] || ''}
         onChange={handleInputChange}
         placeholder={placeholder}
-        className="w-full border border-black px-3 py-2 rounded outline-none"
+        className="w-full border border-gray-300 px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-green-500"
       />
     </div>
   );
 
   return (
-    <div className="flex items-center justify-center py-4 bg-white">
-      <div className={`border border-black rounded-xl p-8 w-full ${state === 'Login' ? 'max-w-sm' : 'max-w-3xl'}`}>
-        <h2 className="text-3xl font-bold text-center mb-6">
-          {state === 'SignUp' ? 'Farmer Registration' : 'Vendor Login'}
-        </h2>
+    <div className="bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className={`w-full mx-auto bg-white border border-gray-200 rounded-xl shadow p-6 sm:p-8 ${state === 'Login' ? 'max-w-md' : 'max-w-4xl'}`}>
+          <h2 className="text-3xl font-extrabold text-center mb-6">
+            {state === 'SignUp' ? 'Farmer Registration' : 'Vendor Login'}
+          </h2>
 
-        <div className="mb-6 text-center text-sm">
-          {state === 'Login' ? (
-            <p>
-              New vendor?{' '}
-              <span onClick={() => setState('SignUp')} className="text-green-600 underline cursor-pointer">
-                Register here
-              </span>
-            </p>
-          ) : (
-            <p>
-              Already have an account?{' '}
-              <span onClick={() => setState('Login')} className="text-blue-600 underline cursor-pointer">
-                Login here
-              </span>
-            </p>
+          <div className="mb-6 text-center text-sm">
+            {state === 'Login' ? (
+              <p>
+                New vendor?{' '}
+                <span onClick={() => setState('SignUp')} className="text-green-700 hover:text-green-800 underline cursor-pointer">
+                  Register here
+                </span>
+              </p>
+            ) : (
+              <p>
+                Already have an account?{' '}
+                <span onClick={() => setState('Login')} className="text-green-700 hover:text-green-800 underline cursor-pointer">
+                  Login here
+                </span>
+              </p>
+            )}
+          </div>
+
+          {errorMsg && <p className="text-red-600 text-sm mb-4">{errorMsg}</p>}
+
+          {/* ---------- Login Form ---------- */}
+          {state === 'Login' && (
+            <form className="space-y-4" onSubmit={handleLoginSubmit}>
+              {inputField({ name: 'email', label: 'Email', type: 'email', placeholder: 'Enter Email' })}
+              {inputField({ name: 'password', label: 'Password', type: 'password', placeholder: 'Enter Password' })}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-green-600 text-white font-semibold py-2 rounded-lg shadow hover:bg-green-700 transition-colors"
+              >
+                {loading ? 'Logging in...' : 'Login'}
+              </button>
+            </form>
           )}
-        </div>
 
-        {errorMsg && <p className="text-red-600 text-sm mb-4">{errorMsg}</p>}
-
-        {/* ---------- Login Form ---------- */}
-        {state === 'Login' && (
-          <form className="space-y-4" onSubmit={handleLoginSubmit}>
-            {inputField({ name: 'email', label: 'Email', type: 'email', placeholder: 'Enter Email' })}
-            {inputField({ name: 'password', label: 'Password', type: 'password', placeholder: 'Enter Password' })}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-green-600 text-white font-semibold py-2 rounded hover:bg-green-700 transition"
-            >
-              {loading ? 'Logging in...' : 'Login'}
-            </button>
-          </form>
-        )}
-
-        {/* ---------- Registration Form ---------- */}
-        {state === 'SignUp' && (
-          <form className="space-y-6" onSubmit={handleRegisterSubmit}>
-            <div>
-              <h3 className="font-semibold mb-2">Personal Details</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {inputField({ name: 'name', label: 'Name', placeholder: 'Enter Name' })}
-                {inputField({ name: 'phone', label: 'Mobile Number', placeholder: 'Enter Phone Number' })}
-              </div>
-              <div className="mt-2">
-                <label className="block mb-1 cursor-pointer">Profile Photo (Optional)</label>
-                <input
-                  type="file"
-                  name="profilePhoto"
-                  accept="image/*"
-                  onChange={handlePhotoChange}
-                  className="w-full border border-black px-3 py-2 rounded outline-none"
-                />
-              </div>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-2">Farm & Address Info</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {inputField({ name: 'farmName', label: 'Farm Name', placeholder: 'Enter Farm Name' })}
-                {inputField({ name: 'village', label: 'Village', placeholder: 'Enter Village' })}
-                {inputField({ name: 'district', label: 'District', placeholder: 'Enter District' })}
-                {inputField({ name: 'state', label: 'State', placeholder: 'Enter State' })}
-                {inputField({ name: 'pincode', label: 'Pincode', placeholder: 'Enter Pincode' })}
-                <div className="md:col-span-2">
-                  <label className="block mb-1 cursor-pointer">Delivery Address (Optional)</label>
-                  <textarea
-                    name="deliveryAddress"
-                    value={formData.deliveryAddress || ''}
-                    onChange={handleInputChange}
-                    placeholder="Enter Address"
-                    className="w-full border border-black px-3 py-2 rounded outline-none"
+          {/* ---------- Registration Form ---------- */}
+          {state === 'SignUp' && (
+            <form className="space-y-6" onSubmit={handleRegisterSubmit}>
+              <div>
+                <h3 className="font-semibold mb-2">Personal Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {inputField({ name: 'name', label: 'Name', placeholder: 'Enter Name' })}
+                  {inputField({ name: 'phone', label: 'Mobile Number', placeholder: 'Enter Phone Number' })}
+                </div>
+                <div className="mt-2">
+                  <label className="block mb-1 text-sm font-medium text-gray-700 cursor-pointer">Profile Photo (Optional)</label>
+                  <input
+                    type="file"
+                    name="profilePhoto"
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                    className="w-full border border-gray-300 px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-green-500"
                   />
                 </div>
               </div>
-            </div>
 
-            <div>
-              <h3 className="font-semibold mb-2">Bank Details</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {inputField({ name: 'accountNumber', label: 'Bank Account Number', type: 'number', placeholder: 'Enter Account Number' })}
-                {inputField({ name: 'ifsc', label: 'IFSC Code', placeholder: 'Enter IFSC' })}
-                {inputField({ name: 'upi', label: 'UPI ID (Optional)', placeholder: 'Enter UPI ID' })}
-                {inputField({ name: 'pan', label: 'PAN Card', placeholder: 'Enter PAN' })}
-                {inputField({ name: 'aadhaar', label: 'Aadhaar Number', placeholder: 'Enter Aadhaar' })}
+              <div>
+                <h3 className="font-semibold mb-2">Farm & Address Info</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {inputField({ name: 'farmName', label: 'Farm Name', placeholder: 'Enter Farm Name' })}
+                  {inputField({ name: 'village', label: 'Village', placeholder: 'Enter Village' })}
+                  {inputField({ name: 'district', label: 'District', placeholder: 'Enter District' })}
+                  {inputField({ name: 'state', label: 'State', placeholder: 'Enter State' })}
+                  {inputField({ name: 'pincode', label: 'Pincode', placeholder: 'Enter Pincode' })}
+                  <div className="md:col-span-2">
+                    <label className="block mb-1 text-sm font-medium text-gray-700 cursor-pointer">Delivery Address (Optional)</label>
+                    <textarea
+                      name="deliveryAddress"
+                      value={formData.deliveryAddress || ''}
+                      onChange={handleInputChange}
+                      placeholder="Enter Address"
+                      className="w-full border border-gray-300 px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div>
-              <h3 className="font-semibold mb-2">Login Credentials</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {inputField({ name: 'email', label: 'Email', type: 'email', placeholder: 'Enter Email' })}
-                {inputField({ name: 'password', label: 'Password', type: 'password', placeholder: 'Enter Password' })}
+              <div>
+                <h3 className="font-semibold mb-2">Bank Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {inputField({ name: 'accountNumber', label: 'Bank Account Number', type: 'number', placeholder: 'Enter Account Number' })}
+                  {inputField({ name: 'ifsc', label: 'IFSC Code', placeholder: 'Enter IFSC' })}
+                  {inputField({ name: 'upi', label: 'UPI ID (Optional)', placeholder: 'Enter UPI ID' })}
+                  {inputField({ name: 'pan', label: 'PAN Card', placeholder: 'Enter PAN' })}
+                  {inputField({ name: 'aadhaar', label: 'Aadhaar Number', placeholder: 'Enter Aadhaar' })}
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <label className="flex items-start space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={agreeTerms}
-                  onChange={() => setAgreeTerms(!agreeTerms)}
-                  className="mt-1"
-                />
-                <span>
-                  I agree to the{' '}
-                  <a href="/terms" target="_blank" className="text-blue-600 underline">
-                    Terms and Conditions
-                  </a>{' '}
-                  of Farmly.
-                </span>
-              </label>
-              <label className="flex items-start space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={consentDataUse}
-                  onChange={() => setConsentDataUse(!consentDataUse)}
-                  className="mt-1"
-                />
-                <span>
-                  I consent to the use of my data by Farmly for platform operations, logistics, and service improvements.
-                </span>
-              </label>
-            </div>
+              <div>
+                <h3 className="font-semibold mb-2">Login Credentials</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {inputField({ name: 'email', label: 'Email', type: 'email', placeholder: 'Enter Email' })}
+                  {inputField({ name: 'password', label: 'Password', type: 'password', placeholder: 'Enter Password' })}
+                </div>
+              </div>
 
-            <button
-              type="submit"
-              disabled={!isFormValid || loading}
-              className={`w-full text-white font-semibold py-2 rounded transition ${isFormValid && !loading ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'}`}
-            >
-              {loading ? 'Registering...' : 'Register'}
-            </button>
-          </form>
-        )}
+              <div className="space-y-2">
+                <label className="flex items-start space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={agreeTerms}
+                    onChange={() => setAgreeTerms(!agreeTerms)}
+                    className="mt-1 accent-green-600"
+                  />
+                  <span>
+                    I agree to the{' '}
+                    <a href="/terms" target="_blank" className="text-green-700 hover:text-green-800 underline">
+                      Terms and Conditions
+                    </a>{' '}
+                    of Farmly.
+                  </span>
+                </label>
+                <label className="flex items-start space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={consentDataUse}
+                    onChange={() => setConsentDataUse(!consentDataUse)}
+                    className="mt-1 accent-green-600"
+                  />
+                  <span>
+                    I consent to the use of my data by Farmly for platform operations, logistics, and service improvements.
+                  </span>
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                disabled={!isFormValid || loading}
+                className={`w-full text-white font-semibold py-2 rounded-lg shadow transition-colors ${isFormValid && !loading ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'}`}
+              >
+                {loading ? 'Registering...' : 'Register'}
+              </button>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   );
