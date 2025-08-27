@@ -9,6 +9,7 @@ const Navbar = () => {
 
     const [userToken, setUserToken] = useState(null);
     const [vendorToken, setVendorToken] = useState(null);
+    const [mobileOpen, setMobileOpen] = useState(false);
 
     useEffect(() => {
         const checkTokens = () => {
@@ -17,6 +18,7 @@ const Navbar = () => {
         };
 
         checkTokens();
+        setMobileOpen(false); // close mobile menu on route change
     }, [location]); // Re-run effect when the URL changes
 
     const handleLogout = () => {
@@ -40,60 +42,115 @@ const Navbar = () => {
     }
 
     return (
-        <div className='bg-green-500 py-5 flex items-center justify-between text-white px-4 sm:px-10'>
-            {/* Logo and Welcome Text */}
-            <div className='flex items-center space-x-2 sm:space-x-4'>
-                <img src={farmly_logo} className='w-10 h-10 sm:w-12 sm:h-12 rounded-full' alt="farmly_logo" />
-                <div className='text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold'>Welcome To Farmly</div>
-            </div>
+        <header className='sticky top-0 z-40 bg-green-500 text-white shadow'>
+            <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+                <div className='py-4 flex items-center justify-between'>
+                    {/* Logo and Welcome Text */}
+                    <div className='flex items-center gap-3'>
+                        <img src={farmly_logo} className='w-10 h-10 sm:w-12 sm:h-12 rounded-full' alt="farmly_logo" />
+                        <NavLink to={homeLinkTo} className='text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight'>
+                            Welcome To Farmly
+                        </NavLink>
+                    </div>
 
-            {/* Navigation Links */}
-            <div className='flex items-center space-x-4 sm:space-x-8'>
+                    {/* Desktop Navigation */}
+                    <nav className='hidden md:flex items-center gap-6'>
+                        {!isAuthenticated && (
+                            <NavLink to='/' className='text-base hover:underline'>Home</NavLink>
+                        )}
+                        {isAuthenticated && userRole === 'customer' && (
+                            <NavLink to='/user/products' className='text-base hover:underline'>UserHome</NavLink>
+                        )}
+                        {isAuthenticated && userRole === 'vendor' && (
+                            <NavLink to='/vendor/dashboard' className='text-base hover:underline'>VendorHome</NavLink>
+                        )}
 
-                {/* Conditional Home Links */}
-                {!isAuthenticated && (
-                    <NavLink to='/' className='text-base sm:text-lg hover:underline'>Home</NavLink>
-                )}
-                {isAuthenticated && userRole === 'customer' && (
-                    <NavLink to='/user/products' className='text-base sm:text-lg hover:underline'>UserHome</NavLink>
-                )}
-                {isAuthenticated && userRole === 'vendor' && (
-                    <NavLink to='/vendor/dashboard' className='text-base sm:text-lg hover:underline'>VendorHome</NavLink>
-                )}
+                        {!isAuthenticated && (
+                            <NavLink to='/user/login' className='text-base hover:underline'>User Login</NavLink>
+                        )}
+                        {!isAuthenticated && (
+                            <NavLink to='/vendor' className='text-base hover:underline'>Vendor Login</NavLink>
+                        )}
+                        <NavLink to='/about' className='text-base hover:underline'>About</NavLink>
+                        <NavLink to='/contact-us' className='text-base hover:underline'>Contact Us</NavLink>
 
-                {/* Show User Login if no one is logged in */}
-                {!isAuthenticated && (
-                    <NavLink to='/user/login' className='text-base sm:text-lg hover:underline'>User Login</NavLink>
-                )}
+                        {isAuthenticated ? (
+                            <button
+                                onClick={handleLogout}
+                                className='px-4 py-2 text-white text-base rounded-full transition-transform duration-300 hover:scale-105 bg-red-600 hover:bg-red-700'
+                            >
+                                Logout
+                            </button>
+                        ) : (
+                            <NavLink
+                                to='/login'
+                                className='px-4 py-2 text-white text-base rounded-full transition-transform duration-300 hover:scale-105 bg-gray-900'
+                            >
+                                Create Account
+                            </NavLink>
+                        )}
+                    </nav>
 
-                {/* Show Vendor Login only if no one is logged in */}
-                {!isAuthenticated && (
-                    <NavLink to='/vendor' className='text-base sm:text-lg hover:underline'>Vendor Login</NavLink>
-                )}
-
-                <NavLink to='/about' className='text-base sm:text-lg hover:underline'>About</NavLink>
-                <NavLink to='/contact-us' className='text-base sm:text-lg hover:underline'>Contact Us</NavLink>
-
-                {/* Conditional Login/Create Account or Logout Button */}
-                {isAuthenticated ? (
+                    {/* Mobile menu button */}
                     <button
-                        onClick={handleLogout}
-                        className='px-3 py-1 sm:px-4 sm:py-2 text-white text-base sm:text-lg rounded-full
-                                        transition-transform duration-500 ease-in-out hover:scale-110 bg-red-600 hover:bg-red-700'
+                        type='button'
+                        aria-label='Open menu'
+                        onClick={() => setMobileOpen((v) => !v)}
+                        className='md:hidden inline-flex items-center justify-center rounded-md p-2 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-white'
                     >
-                        Logout
+                        <svg className='h-6 w-6' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                            {mobileOpen ? (
+                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M6 18L18 6M6 6l12 12' />
+                            ) : (
+                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M4 6h16M4 12h16M4 18h16' />
+                            )}
+                        </svg>
                     </button>
-                ) : (
-                    <NavLink
-                        to='/login' // This will take them to the general user login/signup page
-                        className='px-3 py-1 sm:px-4 sm:py-2 text-white text-base sm:text-lg rounded-full
-                                        transition-transform duration-500 ease-in-out hover:scale-110 bg-gray-800'
-                    >
-                        Create Account
-                    </NavLink>
-                )}
+                </div>
             </div>
-        </div>
+
+            {/* Mobile Navigation Panel */}
+            {mobileOpen && (
+                <div className='md:hidden bg-green-600/95 backdrop-blur'>
+                    <div className='px-4 py-3 space-y-2'>
+                        {!isAuthenticated && (
+                            <NavLink to='/' className='block py-2' onClick={() => setMobileOpen(false)}>Home</NavLink>
+                        )}
+                        {isAuthenticated && userRole === 'customer' && (
+                            <NavLink to='/user/products' className='block py-2' onClick={() => setMobileOpen(false)}>UserHome</NavLink>
+                        )}
+                        {isAuthenticated && userRole === 'vendor' && (
+                            <NavLink to='/vendor/dashboard' className='block py-2' onClick={() => setMobileOpen(false)}>VendorHome</NavLink>
+                        )}
+                        {!isAuthenticated && (
+                            <NavLink to='/user/login' className='block py-2' onClick={() => setMobileOpen(false)}>User Login</NavLink>
+                        )}
+                        {!isAuthenticated && (
+                            <NavLink to='/vendor' className='block py-2' onClick={() => setMobileOpen(false)}>Vendor Login</NavLink>
+                        )}
+                        <NavLink to='/about' className='block py-2' onClick={() => setMobileOpen(false)}>About</NavLink>
+                        <NavLink to='/contact-us' className='block py-2' onClick={() => setMobileOpen(false)}>Contact Us</NavLink>
+
+                        {isAuthenticated ? (
+                            <button
+                                onClick={() => { setMobileOpen(false); handleLogout(); }}
+                                className='mt-2 w-full px-4 py-2 text-white rounded-full bg-red-600 hover:bg-red-700'
+                            >
+                                Logout
+                            </button>
+                        ) : (
+                            <NavLink
+                                to='/login'
+                                onClick={() => setMobileOpen(false)}
+                                className='mt-2 inline-block w-full text-center px-4 py-2 text-white rounded-full bg-gray-900'
+                            >
+                                Create Account
+                            </NavLink>
+                        )}
+                    </div>
+                </div>
+            )}
+        </header>
     );
 };
 

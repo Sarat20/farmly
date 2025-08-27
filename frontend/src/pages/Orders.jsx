@@ -69,23 +69,21 @@ const UserOrders = () => {
     };
 
     if (loading) {
-        return <div className="text-center p-4">Loading orders...</div>;
+        return <div className="text-center p-6">Loading orders...</div>;
     }
 
     if (error) {
-        return <div className="text-center p-4 text-red-600">Error: {error}</div>;
+        return <div className="text-center p-6 text-red-600">Error: {error}</div>;
     }
 
     if (orders.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center h-[60vh] text-center px-4">
-                <h2 className="text-2xl font-bold text-gray-700 mb-2">No Orders Yet!</h2>
-                <p className="text-gray-500 text-lg mb-4">
-                    Looks like you haven't placed any orders.
-                </p>
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">No Orders Yet</h2>
+                <p className="text-gray-600 text-base sm:text-lg mb-4 max-w-md">Looks like you haven't placed any orders. Explore our products and start your journey with Farmly!</p>
                 <a
                     href="/user/products"
-                    className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition"
+                    className="inline-flex items-center justify-center bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition-colors"
                 >
                     Start Shopping
                 </a>
@@ -94,33 +92,37 @@ const UserOrders = () => {
     }
 
     return (
-        <div className="p-4 max-w-4xl mx-auto">
-            <h2 className="text-2xl font-semibold mb-4">Your Orders</h2>
+        <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-5xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight mb-4">Your Orders</h2>
             <div className="space-y-6">
                 {orders.map((order) => (
-                    <div key={order._id} className="border border-gray-200 rounded-lg shadow-sm p-4 bg-white">
-                        <div className="flex justify-between items-center mb-3">
-                            <p className="font-semibold text-lg">Order ID: {order._id}</p>
-                            <p className="text-sm text-gray-500">Placed on: {moment(order.createdAt).format('MMM D, h:mm A')}</p>
+                    <div key={order._id} className="border border-gray-200 rounded-xl shadow-sm p-4 sm:p-6 bg-white">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-3">
+                            <p className="font-semibold text-base sm:text-lg break-all">Order ID: {order._id}</p>
+                            <p className="text-xs sm:text-sm text-gray-500">Placed on: {moment(order.createdAt).format('MMM D, h:mm A')}</p>
                         </div>
-                        <p className="text-gray-700 mb-2">Total Amount: ₹{order.totalAmount.toFixed(2)}</p>
-                        <p className="text-gray-700 mb-2">
-                            Shipping Address: {order.address.line1}, {order.address.city} - {order.address.pincode}
-                        </p>
-                        <p className="text-gray-700 mb-4">Phone: {order.phone}</p>
+                        <div className="grid sm:grid-cols-2 gap-2 sm:gap-4 text-sm sm:text-base mb-4">
+                            <p className="text-gray-700">Total Amount: ₹{order.totalAmount.toFixed(2)}</p>
+                            <p className="text-gray-700">Phone: {order.phone}</p>
+                            <p className="text-gray-700 sm:col-span-2">Shipping: {order.address.line1}, {order.address.city} - {order.address.pincode}</p>
+                        </div>
 
                         <h3 className="font-medium mb-2">Items:</h3>
-                        <ul className="space-y-2">
+                        <ul className="space-y-3">
                             {order.items.map((item) => (
-                                <li key={item._id} className="flex items-center space-x-4 border-t pt-2">
-                                    <img
-                                        src={item.product?.Image || 'https://via.placeholder.com/64'}
-                                        alt={item.product?.Name || 'Product'}
-                                        className="w-16 h-16 object-cover rounded"
-                                    />
-                                    <div className="flex-1">
-                                        <p className="font-medium">{item.product?.Name || 'Unknown Product'}</p>
-                                        <p className="text-gray-600">Quantity: {item.quantity}</p>
+                                <li key={item._id} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 border-t pt-3">
+                                    <div className="flex items-center gap-3 sm:gap-4">
+                                        <img
+                                            src={item.product?.Image || 'https://via.placeholder.com/64'}
+                                            alt={item.product?.Name || 'Product'}
+                                            className="w-16 h-16 object-cover rounded"
+                                        />
+                                        <div>
+                                            <p className="font-medium">{item.product?.Name || 'Unknown Product'}</p>
+                                            <p className="text-gray-600 text-sm">Quantity: {item.quantity}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 sm:text-right">
                                         <p className="text-gray-600">Status: <span className={`font-semibold ${
                                             item.status === 'Delivered' ? 'text-green-600' :
                                             item.status === 'Cancelled' ? 'text-red-600' :
@@ -130,7 +132,7 @@ const UserOrders = () => {
                                         {(item.status === 'Pending' || item.status === 'Processing') && (
                                             <button
                                                 onClick={() => handleCancelOrderItem(order._id, item._id)}
-                                                className="mt-2 px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition"
+                                                className="mt-2 px-3 py-1.5 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 transition-colors"
                                             >
                                                 Cancel Item
                                             </button>
