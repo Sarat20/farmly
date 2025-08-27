@@ -54,14 +54,14 @@ const ProductDetails = () => {
     if (!product) return <p className="p-4">Product not found.</p>;
 
     return (
-        <div className="p-4 max-w-4xl mx-auto">
+        <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-4xl mx-auto">
             {notification && (
                 <div className="fixed top-[70px] left-1/2 transform -translate-x-1/2 bg-blue-100 text-blue-800 px-4 py-2 rounded shadow-lg z-[1000]">
                     {notification}
                 </div>
             )}
 
-            <Link to="/user/products" className="text-blue-600 underline mb-4 inline-block">
+            <Link to="/user/products" className="text-green-700 hover:text-green-800 underline mb-4 inline-block">
                 &larr; Back to Products
             </Link>
 
@@ -91,14 +91,14 @@ const ProductDetails = () => {
                     <div className="flex space-x-4">
                         <button
                             onClick={handleAddToCart}
-                            className="flex items-center px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                            className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
                         >
                             <FaShoppingCart className="mr-2" />
                             Add to Cart
                         </button>
                         <button
                             onClick={handleAddToWishlist}
-                            className="flex items-center px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
+                            className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
                         >
                             <FaHeart className="mr-2" />
                             Add to Wishlist

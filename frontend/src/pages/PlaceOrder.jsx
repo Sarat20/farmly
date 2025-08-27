@@ -46,8 +46,8 @@ const PlaceOrder = () => {
   };
 
   return (
-    <div className="p-4 max-w-3xl mx-auto">
-      <h2 className="text-2xl font-semibold mb-4">Place Order</h2>
+    <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-3xl mx-auto">
+      <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight mb-4">Place Order</h2>
 
       <div className="mb-4">
         <label className="block mb-1 font-medium">Phone Number</label>
@@ -56,7 +56,7 @@ const PlaceOrder = () => {
           placeholder="Enter phone number"
           value={phoneNumber}
           onChange={(e) => setPhoneNumber(e.target.value)}
-          className="border px-4 py-2 rounded w-full"
+          className="border px-4 py-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-500"
         />
       </div>
 
@@ -71,6 +71,7 @@ const PlaceOrder = () => {
                   name="address"
                   value={address}
                   onChange={() => setSelectedAddress(address)}
+                  className="accent-green-600"
                 />
                 <span>{address}</span>
               </label>
@@ -84,7 +85,7 @@ const PlaceOrder = () => {
         <select
           value={paymentType}
           onChange={(e) => setPaymentType(e.target.value)}
-          className="border px-4 py-2 rounded w-full"
+          className="border px-4 py-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-500"
         >
           <option value="COD">Cash on Delivery</option>
           <option value="Online">Online Payment</option>
@@ -96,7 +97,7 @@ const PlaceOrder = () => {
         <select
           value={deliveryMethod}
           onChange={(e) => setDeliveryMethod(e.target.value)}
-          className="border px-4 py-2 rounded w-full"
+          className="border px-4 py-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-500"
         >
           <option value="Standard">Standard Delivery</option>
           <option value="Express">Express Delivery</option>
@@ -104,7 +105,7 @@ const PlaceOrder = () => {
       </div>
 
       <button
-        className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+        className="bg-green-600 text-white px-6 py-2 rounded-lg shadow hover:bg-green-700 transition-colors"
         onClick={handleOrder}
       >
         Confirm & Place Order

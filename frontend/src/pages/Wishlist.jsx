@@ -19,7 +19,7 @@ const Wishlist = () => {
         </p>
         <Link
           to="/user/products"
-          className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition"
+          className="bg-green-600 text-white px-6 py-2 rounded-lg shadow hover:bg-green-700 transition-colors"
         >
           Browse Products
         </Link>
@@ -28,13 +28,13 @@ const Wishlist = () => {
   }
 
   return (
-    <div className="p-4 max-w-3xl mx-auto">
-      <h2 className="text-2xl font-semibold mb-4">My Wishlist</h2>
+    <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-3xl mx-auto">
+      <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight mb-4">My Wishlist</h2>
       <ul className="space-y-4">
         {wishlist.map((product) => (
           <li
             key={product._id}
-            className="flex items-center border p-4 rounded-lg shadow-sm cursor-pointer hover:shadow-md transition"
+            className="flex items-center border p-4 rounded-lg bg-white shadow-sm cursor-pointer hover:shadow-md transition-shadow"
           >
             {/* Clickable product area */}
             <div
@@ -60,7 +60,7 @@ const Wishlist = () => {
             {/* Remove from wishlist button */}
             <button
               onClick={() => removeFromWishlist(product._id)}
-              className="ml-4 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+              className="ml-4 px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
               aria-label={`Remove ${product.Name} from wishlist`}
               title="Remove from wishlist"
             >

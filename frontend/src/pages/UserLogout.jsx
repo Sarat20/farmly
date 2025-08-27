@@ -12,7 +12,7 @@ const UserLogout = () => {
   }, [navigate]);
 
   return (
-    <div>Logging out...</div>
+    <div className="flex items-center justify-center h-[60vh] text-gray-600">Logging out...</div>
   );
 };
 

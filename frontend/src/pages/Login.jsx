@@ -70,95 +70,102 @@ const Login = () => {
     };
 
     return (
-        <div className="flex flex-row space-x-10">
-            {/* If homelogo is meant for the general login/signup page */}
-            <img className="w-1/3 h-full " src={homelogo} alt="" />
+        <div className="bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                    {/* Illustration */}
+                    <div className="flex justify-center">
+                        <img className="w-full max-w-md h-auto object-contain" src={homelogo} alt="Farmly" />
+                    </div>
 
-            <div className="flex flex-col items-center mt-8">
-                <p className="text-3xl font-bold mb-6">
-                    {state === "SignUp" ? "SIGN UP" : "LOGIN"}
-                </p>
+                    {/* Auth Card */}
+                    <div className="flex flex-col items-center md:items-start">
+                        <p className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-6">
+                            {state === "SignUp" ? "Sign Up" : "Login"}
+                        </p>
 
-                <div className="border-2 border-black px-8 py-6 rounded-lg w-96">
-                    <form className="flex flex-col space-y-4" onSubmit={handleSubmit}>
-                        {state === "SignUp" && (
-                            <div>
-                                <p className="text-lg mb-1">Enter Name</p>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={formData.name}
-                                    onChange={handleInputChange}
-                                    className="border border-black px-3 py-1 w-full"
-                                    placeholder="Enter your name"
-                                    required
-                                />
+                        <div className="w-full max-w-md bg-white border border-gray-200 rounded-xl shadow px-6 py-6">
+                            <form className="flex flex-col space-y-4" onSubmit={handleSubmit}>
+                                {state === "SignUp" && (
+                                    <div>
+                                        <p className="text-lg mb-1">Enter Name</p>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={handleInputChange}
+                                            className="border border-gray-300 px-3 py-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                            placeholder="Enter your name"
+                                            required
+                                        />
+                                    </div>
+                                )}
+
+                                <div>
+                                    <p className="text-lg mb-1">Email</p>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleInputChange}
+                                        className="border border-gray-300 px-3 py-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        placeholder="Enter your email"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <p className="text-lg mb-1">Password</p>
+                                    <input
+                                        type="password"
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleInputChange}
+                                        className="border border-gray-300 px-3 py-2 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        placeholder="Enter your password"
+                                        required
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="bg-green-600 text-white py-2 rounded-lg shadow hover:bg-green-700 transition-colors"
+                                    disabled={loading}
+                                >
+                                    {loading
+                                        ? `${state === "SignUp" ? "Signing up..." : "Logging in..."}`
+                                        : state === "SignUp"
+                                            ? "Sign Up"
+                                            : "Login"}
+                                </button>
+                            </form>
+
+                            {errorMsg && <p className="text-red-600 text-sm mt-2">{errorMsg}</p>}
+
+                            <div className="mt-4 text-center">
+                                {state === "SignUp" ? (
+                                    <p className="text-sm">
+                                        Already have an account?{" "}
+                                        <span
+                                            onClick={() => setState("Login")}
+                                            className="text-green-700 hover:text-green-800 underline cursor-pointer"
+                                        >
+                                            Login here
+                                        </span>
+                                    </p>
+                                ) : (
+                                    <p className="text-sm">
+                                        Create a new account?{" "}
+                                        <span
+                                            onClick={() => setState("SignUp")}
+                                            className="text-green-700 hover:text-green-800 underline cursor-pointer"
+                                        >
+                                            Click here
+                                        </span>
+                                    </p>
+                                )}
                             </div>
-                        )}
-
-                        <div>
-                            <p className="text-lg mb-1">Email</p>
-                            <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                                className="border border-black px-3 py-1 w-full"
-                                placeholder="Enter your email"
-                                required
-                            />
                         </div>
-
-                        <div>
-                            <p className="text-lg mb-1">Password</p>
-                            <input
-                                type="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleInputChange}
-                                className="border border-black px-3 py-1 w-full"
-                                placeholder="Enter your password"
-                                required
-                            />
-                        </div>
-
-                        <button
-                            type="submit"
-                            className="bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-all"
-                            disabled={loading}
-                        >
-                            {loading
-                                ? `${state === "SignUp" ? "Signing up..." : "Logging in..."}`
-                                : state === "SignUp"
-                                    ? "SIGN UP"
-                                    : "LOGIN"}
-                        </button>
-                    </form>
-
-                    {errorMsg && <p className="text-red-600 text-sm mt-2">{errorMsg}</p>}
-
-                    <div className="mt-4 text-center">
-                        {state === "SignUp" ? (
-                            <p className="text-sm">
-                                Already have an account?{" "}
-                                <span
-                                    onClick={() => setState("Login")}
-                                    className="text-blue-600 underline cursor-pointer"
-                                >
-                                    Login here
-                                </span>
-                            </p>
-                        ) : (
-                            <p className="text-sm">
-                                Create a new account?{" "}
-                                <span
-                                    onClick={() => setState("SignUp")}
-                                    className="text-blue-600 underline cursor-pointer"
-                                >
-                                    Click here
-                                </span>
-                            </p>
-                        )}
                     </div>
                 </div>
             </div>

@@ -43,17 +43,17 @@ const Product = () => {
         });
 
     return (
-        <div className="p-4">
-            <h2 className="text-2xl font-semibold mb-4">All Products</h2>
+        <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight mb-4">All Products</h2>
 
-            <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4 mb-4 items-center">
+            <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4 mb-6 items-center">
                 <div className="relative w-full sm:w-1/2">
                     <input
                         type="text"
                         placeholder="Search by name..."
                         value={searchTermInput}
                         onChange={(e) => setSearchTermInput(e.target.value)}
-                        className="border p-2 pr-10 rounded w-full"
+                        className="border p-2 pr-10 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
                     <FaSearch
                         onClick={handleSearch}
@@ -64,7 +64,7 @@ const Product = () => {
                 <select
                     value={typeFilter}
                     onChange={(e) => setTypeFilter(e.target.value)}
-                    className="border p-2 rounded w-full sm:w-1/4"
+                    className="border p-2 rounded-lg w-full sm:w-1/4 focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                     <option value="">All Types</option>
                     <option value="Fresh Produce">Fresh Produce</option>
@@ -76,7 +76,7 @@ const Product = () => {
                 <select
                     value={sortOption}
                     onChange={(e) => setSortOption(e.target.value)}
-                    className="border p-2 rounded w-full sm:w-1/4"
+                    className="border p-2 rounded-lg w-full sm:w-1/4 focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                     <option value="">Sort By</option>
                     <option value="price-low">Price: Low to High</option>
@@ -93,11 +93,11 @@ const Product = () => {
             )}
 
             {/* Product Grid: 4 per row on md+ */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
                 {filteredProducts.map((product) => (
                     <div
                         key={product._id}
-                        className="relative border p-2 rounded-lg shadow-sm text-xs hover:shadow-md transition-shadow duration-200"
+                        className="relative border p-2 rounded-lg bg-white shadow-sm text-xs hover:shadow-md transition-shadow duration-200"
                     >
                         {/* Removed Wish & Cart icons div */}
 

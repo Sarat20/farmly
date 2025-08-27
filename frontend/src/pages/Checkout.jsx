@@ -89,16 +89,16 @@ const Checkout = () => {
     };
 
     return (
-        <div className="p-4 max-w-lg mx-auto">
-            <h2 className="text-xl font-bold mb-4">Checkout</h2>
+        <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-2xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-4">Checkout</h2>
 
             <h3 className="font-semibold mb-2">Cart Summary</h3>
-            <ul className="mb-4 border p-3 rounded">
+            <ul className="mb-4 border p-4 rounded-lg bg-white shadow-sm">
                 {cart.length === 0 ? (
                     <p>Your cart is empty.</p>
                 ) : (
                     cart.map((item) => (
-                        <li key={item._id} className="flex justify-between items-center mb-1">
+                        <li key={item._id} className="flex justify-between items-center mb-1 text-sm">
                             <span>{item.Name} x {item.quantity}</span>
                             <span>₹{(item.Price * item.quantity).toFixed(2)}</span>
                         </li>
@@ -111,12 +111,12 @@ const Checkout = () => {
             </ul>
 
             <h3 className="font-semibold mb-2">Select Address</h3>
-            {addresses.length === 0 && <p className="mb-4">No saved addresses. Please add one below.</p>}
+            {addresses.length === 0 && <p className="mb-4 text-sm text-gray-600">No saved addresses. Please add one below.</p>}
             <ul className="mb-4">
                 {addresses.map((addr, i) => (
                     <li
                         key={i}
-                        className="mb-2 flex items-center justify-between border p-2 rounded"
+                        className="mb-2 flex items-center justify-between border p-3 rounded-lg bg-white"
                     >
                         <label className="flex items-center space-x-2 cursor-pointer">
                             <input
@@ -124,7 +124,7 @@ const Checkout = () => {
                                 name="selectedAddress"
                                 checked={selectedAddressIndex === i}
                                 onChange={() => setSelectedAddressIndex(i)}
-                                className="mr-2"
+                                className="mr-2 accent-green-600"
                             />
                             <span>{`${addr.line1}, ${addr.city} - ${addr.pincode}`}</span>
                         </label>
@@ -146,25 +146,25 @@ const Checkout = () => {
                 placeholder="Address line 1"
                 value={newAddress.line1}
                 onChange={(e) => setNewAddress({ ...newAddress, line1: e.target.value })}
-                className="w-full border p-2 mb-2"
+                className="w-full border p-2 mb-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
             <input
                 type="text"
                 placeholder="City"
                 value={newAddress.city}
                 onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
-                className="w-full border p-2 mb-2"
+                className="w-full border p-2 mb-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
             <input
                 type="text"
                 placeholder="Pincode"
                 value={newAddress.pincode}
                 onChange={(e) => setNewAddress({ ...newAddress, pincode: e.target.value })}
-                className="w-full border p-2 mb-4"
+                className="w-full border p-2 mb-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
             <button
                 onClick={handleAddAddress}
-                className="bg-blue-600 text-white px-4 py-2 rounded mb-6"
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors mb-6"
             >
                 Add Address
             </button>
@@ -174,12 +174,12 @@ const Checkout = () => {
                 placeholder="Phone Number"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full border p-2 mb-2"
+                className="w-full border p-2 mb-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
             <select
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
-                className="w-full border p-2 mb-4"
+                className="w-full border p-2 mb-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             >
                 <option value="COD">Cash on Delivery</option>
                 <option value="UPI">UPI</option>
@@ -187,7 +187,7 @@ const Checkout = () => {
             </select>
             <button
                 onClick={handlePlaceOrder}
-                className="bg-green-600 text-white px-4 py-2 rounded"
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
             >
                 Confirm Order
             </button>
