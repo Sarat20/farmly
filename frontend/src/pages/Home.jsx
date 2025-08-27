@@ -23,7 +23,7 @@ const Home = () => {
                         <div className='flex flex-col gap-6'>
                             <h1 className='text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900'>
                                 Farmly is a place where you can
-                                <span className='block text-green-600 mt-2'>buy and sell agro products</span>
+                                <span className='text-3xl text-green-900 mt-2'>buy and sell agro products</span>
                             </h1>
                             <p className='text-lg text-gray-700'>Buy and sell seamlessly with a marketplace built for farmers and consumers.</p>
                             <div>
