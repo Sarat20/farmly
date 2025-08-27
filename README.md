@@ -77,6 +77,7 @@ Farmly ensures a smooth experience for both desktop and mobile users.
 ---
 
 ## 📁 Project Structure
+```bash
 farmly/
 ├── backend/
 │ ├── config/
