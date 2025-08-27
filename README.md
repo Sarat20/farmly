@@ -1,12 +1,5 @@
 # 🌾 Farmly — Agro Product Marketplace
 
-![GitHub Repo Size](https://img.shields.io/github/repo-size/Sarat20/farmly)  
-![GitHub issues](https://img.shields.io/github/issues/Sarat20/farmly)  
-![GitHub license](https://img.shields.io/github/license/Sarat20/farmly)  
-![GitHub last commit](https://img.shields.io/github/last-commit/Sarat20/farmly)  
-![Made with Node.js](https://img.shields.io/badge/Backend-Node.js-green)  
-![Made with React](https://img.shields.io/badge/Frontend-React-blue)  
-
 Farmly is a full-stack web application designed to streamline buying and selling of agricultural products.  
 It allows vendors to list their products, manage orders, and track payments, while users can browse products, place orders, and manage their purchases—all in a seamless, responsive interface.
 
